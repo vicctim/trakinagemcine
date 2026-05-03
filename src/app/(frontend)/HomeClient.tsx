@@ -67,25 +67,13 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
   const heroImageUrl = getMediaUrl(siteConfig?.heroImage)
 
   const tickerItems = [
-    'NOVISUAIS', 'CINEMA INDEPENDENTE', 'EDUCAÇÃO E ARTE',
+    'AUDIOVISUAL', 'CINEMA INDEPENDENTE', 'EDUCAÇÃO E ARTE',
     'JUVENTUDE PROTAGONISTA', 'MINAS GERAIS', 'DESDE 2018',
     'OFICINAS AUDIOVISUAIS', 'CINEMA TRANSFORMA VIDAS',
   ]
 
   return (
     <>
-      {/* ═══ TICKER (Editorial Theme Only) ═══ */}
-      <div className="editorial-ticker" aria-hidden="true">
-        <div className="editorial-ticker__track">
-          {[...tickerItems, ...tickerItems].map((item, i) => (
-            <span key={i} className="editorial-ticker__item">
-              {item}
-              <span className="editorial-ticker__sep">★</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* ═══ HERO ═══ */}
       <section className="hero">
         {heroImageUrl && (
@@ -205,6 +193,18 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
           <span className="hero__scroll-line" />
         </motion.div>
       </section>
+
+      {/* ═══ TICKER (Editorial Theme Only) — after hero ═══ */}
+      <div className="editorial-ticker" aria-hidden="true">
+        <div className="editorial-ticker__track">
+          {[...tickerItems, ...tickerItems].map((item, i) => (
+            <span key={i} className="editorial-ticker__item">
+              {item}
+              <span className="editorial-ticker__sep">★</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* ═══ NÚMEROS ═══ */}
       <section className="section section-alt numbers-section">
@@ -642,6 +642,12 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+          .filmes-grid {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (min-width: 768px) {

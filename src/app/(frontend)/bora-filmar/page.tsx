@@ -168,6 +168,30 @@ export default function BoraFilmarPage() {
           flex-shrink: 0;
         }
 
+        @media (max-width: 640px) {
+          .bora-hero {
+            padding-top: 96px;
+            padding-bottom: 3rem;
+          }
+
+          .bora-hero__container {
+            align-items: flex-start;
+            gap: 2rem;
+          }
+
+          .bora-hero__facts {
+            width: 100%;
+            flex-shrink: 1;
+            gap: 1rem;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .bora-hero__facts {
+            grid-template-columns: 1fr;
+          }
+        }
+
         .fact-item {
           display: flex;
           flex-direction: column;

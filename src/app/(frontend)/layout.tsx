@@ -1,5 +1,5 @@
 import React from 'react'
-import { Inter, Cormorant_Garamond } from 'next/font/google'
+import { Inter, Cormorant_Garamond, Playfair_Display } from 'next/font/google'
 import type { Metadata } from 'next'
 import './styles.css'
 import { Header } from '@/components/layout/Header'
@@ -20,6 +20,14 @@ const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-cormorant',
+  display: 'swap',
+})
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '900'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair',
   display: 'swap',
 })
 
@@ -96,7 +104,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${cormorant.variable}`} data-site-theme={theme}>
+    <html lang="pt-BR" className={`${inter.variable} ${cormorant.variable} ${playfair.variable}`} data-site-theme={theme}>
       <head>
         <script
           type="application/ld+json"

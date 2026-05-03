@@ -256,7 +256,15 @@ export default function TimelineClient({ edicoes }: { edicoes: Edicao[] }) {
           .timeline { padding-left: 50px; }
           .timeline::before { left: 25px; }
           .timeline-item__year { left: -50px; width: 50px; }
-          .timeline-item__year-text { width: 25px; font-size: 0.9rem; }
+          .timeline-item__year-text { width: 36px; font-size: 0.82rem; }
+          .timeline-item__dot { right: -1px; }
+        }
+
+        @media (max-width: 380px) {
+          .timeline { padding-left: 42px; }
+          .timeline::before { left: 21px; }
+          .timeline-item__year { left: -42px; width: 42px; }
+          .timeline-item__year-text { width: 31px; font-size: 0.76rem; }
         }
       `}</style>
     </>

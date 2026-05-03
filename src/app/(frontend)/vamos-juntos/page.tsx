@@ -359,9 +359,15 @@ export default function VamosJuntosPage() {
           gap: 0.6rem;
           font-size: 0.875rem;
           color: var(--color-text-secondary);
+          min-width: 0;
         }
 
         .contato-way__icon { flex-shrink: 0; color: var(--color-accent); }
+
+        .contato-way span {
+          min-width: 0;
+          overflow-wrap: anywhere;
+        }
 
         .contato-social {
           display: flex;

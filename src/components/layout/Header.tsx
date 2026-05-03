@@ -173,17 +173,16 @@ export function Header() {
 
   return (
     <>
-      {/* ── Editorial utility bar (hidden by default) ─── */}
-      <div className="header__utility-bar">
-        <span>Belo Horizonte · Brasil</span>
-        <div className="header__utility-bar-right">
-          <span>Lei nº 24.462</span>
-          <span className="header__utility-sep">·</span>
-          <span>LEIC 2018.13605.0270</span>
-        </div>
-      </div>
-
       <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
+        {/* ── Editorial utility bar (inside header, hidden by default) ─── */}
+        <div className="header__utility-bar">
+          <span>Uberlândia · Minas Gerais</span>
+          <div className="header__utility-bar-right">
+            <span>Lei nº 24.462</span>
+            <span className="header__utility-sep">·</span>
+            <span>LEIC 2018.13605.0270</span>
+          </div>
+        </div>
         {/* ── Desktop: Big centered logo layout ─────────────────────────── */}
         <div className="header__desktop container">
           {/* Left nav */}
@@ -201,6 +200,10 @@ export function Header() {
               alt="Trakinagem Cine"
               className="header__logo-img"
             />
+            <span className="header__logo-text" aria-hidden="true">
+              <span className="header__logo-title">Trakinagem Cine</span>
+              <span className="header__logo-sub">Cinema transforma vidas</span>
+            </span>
           </Link>
 
           {/* Right nav */}
@@ -220,6 +223,10 @@ export function Header() {
               alt="Trakinagem Cine"
               className="header__logo-img"
             />
+            <span className="header__logo-text" aria-hidden="true">
+              <span className="header__logo-title">Trakinagem Cine</span>
+              <span className="header__logo-sub">Cinema transforma vidas</span>
+            </span>
           </Link>
 
           <button
@@ -265,6 +272,11 @@ export function Header() {
       <style>{`
         /* ─── Editorial utility bar ─── */
         .header__utility-bar {
+          display: none;
+        }
+
+        /* ─── Editorial logo text (hidden by default) ─── */
+        .header__logo-text {
           display: none;
         }
 
@@ -465,6 +477,16 @@ export function Header() {
           }
         }
 
+        @media (max-width: 640px) {
+          .header__mobile {
+            height: 88px;
+          }
+
+          .header__logo-img {
+            height: 78px;
+          }
+        }
+
         /* ─── Burger button ─── */
         .header__burger {
           display: flex;
@@ -551,6 +573,12 @@ export function Header() {
           display: flex;
           flex-direction: column;
           gap: 0.2rem;
+        }
+
+        @media (max-width: 640px) {
+          .mobile-nav__inner {
+            padding-top: 4.25rem;
+          }
         }
 
         /* ─── Mobile nav links ─── */

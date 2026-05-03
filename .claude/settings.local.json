@@ -20,7 +20,13 @@
       "Bash(curl -s http://localhost:3006/nossos-filmes)",
       "Bash(curl -s http://localhost:3006/premios)",
       "Bash(read f *)",
-      "Bash(curl -s http://localhost:3006/_next/static/css/__TRACKED_VAR__)"
+      "Bash(curl -s http://localhost:3006/_next/static/css/__TRACKED_VAR__)",
+      "Bash(echo \"Build started in background \\(PID $!\\)\")",
+      "Bash(curl -s \"http://localhost:3006/_next/static/css/4ef9342fb928406d.css\")",
+      "Bash(curl -s \"http://localhost:3006/_next/static/css/5c1ae2de90a218f8.css\")",
+      "Bash(echo \"Build started \\(PID $!\\)\")",
+      "Bash(echo \"Build7 started \\(PID $!\\)\")",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

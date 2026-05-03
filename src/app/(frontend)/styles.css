@@ -528,12 +528,15 @@ input[type="reset"], .cursor-pointer {
   gap: 0;
   min-height: 100vh;
 }
-/* Left text: restore top clearance (header height) via its own padding */
+/* Left text: vertically centered, with top padding as header clearance buffer */
 [data-site-theme="editorial"] .hero__left {
-  padding-top: clamp(96px, 12vw, 130px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 7rem;
+  padding-bottom: 4rem;
   padding-left: clamp(1.5rem, 5vw, 5rem);
   padding-right: clamp(1rem, 3vw, 3rem);
-  padding-bottom: 4rem;
 }
 
 @media (max-width: 899px) {

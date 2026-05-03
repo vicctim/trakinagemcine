@@ -214,6 +214,12 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
           gap: 1.5rem;
         }
 
+        @media (max-width: 420px) {
+          .filmes-catalog {
+            grid-template-columns: 1fr;
+          }
+        }
+
         @media (min-width: 768px) {
           .filmes-catalog {
             grid-template-columns: repeat(4, 1fr);
@@ -297,6 +303,13 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
           justify-content: center;
           padding: 2rem;
           cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+          .film-modal {
+            align-items: flex-start;
+            padding: 1rem;
+          }
         }
 
         .film-modal__content {
