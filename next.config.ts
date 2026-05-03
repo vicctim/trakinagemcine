@@ -37,9 +37,18 @@ const nextConfig: NextConfig = {
     ].join('; ')
 
     return [
+      // Static assets with content hashes — cache forever (safe, immutable filenames)
       {
-        source: '/(.*)',
+        source: '/_next/static/(.*)',
         headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // HTML pages and API routes — never cache (prevents stale chunk 404s after deploy)
+      {
+        source: '/((?!_next/static).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

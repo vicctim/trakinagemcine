@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import { CookieBanner } from '@/components/ui/CookieBanner'
 import { PageTransition } from '@/components/ui/PageTransition'
 import { AnalyticsScripts } from '@/components/ui/AnalyticsScripts'
+import { ChunkErrorRecovery } from '@/components/ui/ChunkErrorRecovery'
 import { getPayloadClient } from '@/lib/payload'
 
 const inter = Inter({
@@ -22,6 +23,9 @@ const cormorant = Cormorant_Garamond({
   display: 'swap',
 })
 
+// Force SSR so data-site-theme is always read fresh from DB (theme toggle works on all pages)
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: {
     default: 'Trakinagem Cine — Cinema transforma vidas',
@@ -30,6 +34,13 @@ export const metadata: Metadata = {
   description:
     'Projeto cultural e educativo que ensina produção audiovisual a jovens em situação de vulnerabilidade social, por meio de oficinas de cinema.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  icons: {
+    icon: [
+      { url: '/images/favicon.png', type: 'image/png' },
+    ],
+    shortcut: '/images/favicon.png',
+    apple: '/images/favicon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
@@ -93,6 +104,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
+        <ChunkErrorRecovery />
         <Header />
         <PageTransition>
           <main>{children}</main>

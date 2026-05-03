@@ -80,7 +80,7 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
           {[...tickerItems, ...tickerItems].map((item, i) => (
             <span key={i} className="editorial-ticker__item">
               {item}
-              <span className="editorial-ticker__sep">◆</span>
+              <span className="editorial-ticker__sep">★</span>
             </span>
           ))}
         </div>

@@ -173,6 +173,16 @@ export function Header() {
 
   return (
     <>
+      {/* ── Editorial utility bar (hidden by default) ─── */}
+      <div className="header__utility-bar">
+        <span>Belo Horizonte · Brasil</span>
+        <div className="header__utility-bar-right">
+          <span>Lei nº 24.462</span>
+          <span className="header__utility-sep">·</span>
+          <span>LEIC 2018.13605.0270</span>
+        </div>
+      </div>
+
       <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
         {/* ── Desktop: Big centered logo layout ─────────────────────────── */}
         <div className="header__desktop container">
@@ -253,6 +263,11 @@ export function Header() {
       )}
 
       <style>{`
+        /* ─── Editorial utility bar ─── */
+        .header__utility-bar {
+          display: none;
+        }
+
         /* ─── Header shell ─── */
         .header {
           position: fixed;
