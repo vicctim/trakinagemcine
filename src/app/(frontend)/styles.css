@@ -1685,12 +1685,44 @@ input[type="reset"], .cursor-pointer {
   .hero__cta-secondary { text-align: center; }
 }
 
-/* ─── Page inner header sections: adjust padding-top ─── */
+/* ─── Page inner header sections: correct padding-top globally ─── */
+/* Desktop header = 140px → needs at least 160px to clear it */
+.page-header-section { padding-top: 164px !important; }
+
+/* Dedicated hero sections (bora-filmar, como-filmar) */
+.bora-hero { padding-top: 164px !important; }
+.metodo-hero { padding-top: 164px !important; }
+
+/* Editorial adds ~32px utility bar → needs ~196px */
+[data-site-theme="editorial"] .page-header-section { padding-top: 196px !important; }
+[data-site-theme="editorial"] .bora-hero { padding-top: 196px !important; }
+[data-site-theme="editorial"] .metodo-hero { padding-top: 196px !important; }
+
+/* breadcrumb-section used in timeline/[slug] detail pages */
+.breadcrumb-section { padding-top: 156px !important; }
+[data-site-theme="editorial"] .breadcrumb-section { padding-top: 188px !important; }
+
 @media (max-width: 1024px) {
-  .page-header-section { padding-top: 100px !important; }
+  /* Mobile header ≈ 96px */
+  .page-header-section { padding-top: 112px !important; }
+  .bora-hero { padding-top: 112px !important; }
+  .metodo-hero { padding-top: 112px !important; }
+  [data-site-theme="editorial"] .page-header-section { padding-top: 130px !important; }
+  [data-site-theme="editorial"] .bora-hero { padding-top: 130px !important; }
+  [data-site-theme="editorial"] .metodo-hero { padding-top: 130px !important; }
+  .breadcrumb-section { padding-top: 106px !important; }
+  [data-site-theme="editorial"] .breadcrumb-section { padding-top: 124px !important; }
 }
 @media (max-width: 480px) {
-  .page-header-section { padding-top: 84px !important; }
+  /* Mobile header ≈ 80px */
+  .page-header-section { padding-top: 96px !important; }
+  .bora-hero { padding-top: 96px !important; }
+  .metodo-hero { padding-top: 96px !important; }
+  [data-site-theme="editorial"] .page-header-section { padding-top: 112px !important; }
+  [data-site-theme="editorial"] .bora-hero { padding-top: 112px !important; }
+  [data-site-theme="editorial"] .metodo-hero { padding-top: 112px !important; }
+  .breadcrumb-section { padding-top: 90px !important; }
+  [data-site-theme="editorial"] .breadcrumb-section { padding-top: 106px !important; }
 }
 
 /* ─── Filter / year buttons: minimum 44px touch target ─── */

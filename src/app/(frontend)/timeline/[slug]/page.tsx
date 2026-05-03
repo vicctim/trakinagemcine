@@ -218,7 +218,7 @@ export default async function EdicaoSlugPage({ params }: Props) {
 
       <style>{`
         .breadcrumb-section {
-          padding: 100px 0 0;
+          padding: 0 0 1rem;
         }
 
         .breadcrumb {
