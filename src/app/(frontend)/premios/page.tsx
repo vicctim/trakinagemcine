@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Trophy, Clapperboard } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Prêmios — Trakinagem Cine',

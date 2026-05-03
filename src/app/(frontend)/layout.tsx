@@ -32,7 +32,7 @@ const playfair = Playfair_Display({
 })
 
 // Force SSR so data-site-theme is always read fresh from DB (theme toggle works on all pages)
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: {

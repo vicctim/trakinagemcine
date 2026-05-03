@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { Newspaper } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Quentinhas — Trakinagem Cine',
