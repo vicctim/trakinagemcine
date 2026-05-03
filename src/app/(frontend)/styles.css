@@ -204,6 +204,9 @@ input[type="reset"], .cursor-pointer {
   --ed-blue:   #3A5FD4;
   --ed-yellow: #D4B82A;
 
+  /* Playfair Display replaces Cormorant in editorial mode */
+  --font-heading: var(--font-playfair), "Playfair Display", ui-serif, Georgia, serif;
+
   --color-bg-primary:        var(--ed-paper);
   --color-bg-secondary:      #EDE8D8;
   --color-bg-tertiary:       #E3DCC8;
@@ -238,31 +241,10 @@ input[type="reset"], .cursor-pointer {
   border-radius: 0 !important;
 }
 
-/* ─── Utility bar ───────────────────────── */
-[data-site-theme="editorial"] .header__utility-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1.5rem;
-  background: rgba(212,184,42,0.25);
-  border-bottom: 2px solid var(--ed-ink);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ed-ink);
-}
-[data-site-theme="editorial"] .header__utility-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-[data-site-theme="editorial"] .header__utility-sep {
-  opacity: 0.3;
-}
-
-/* ─── Header overrides ────────────────────── */
+/* ─── Header overrides (utility bar now inside header) ───────────── */
 [data-site-theme="editorial"] .header {
+  display: flex;
+  flex-direction: column;
   background: var(--ed-paper);
   border-bottom: 2px solid var(--ed-ink);
   backdrop-filter: none;
@@ -272,6 +254,30 @@ input[type="reset"], .cursor-pointer {
   backdrop-filter: none;
   box-shadow: none;
   border-bottom: 2px solid var(--ed-ink);
+}
+
+/* ─── Utility bar ───────────────────────── */
+[data-site-theme="editorial"] .header__utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 1.5rem;
+  background: rgba(212,184,42,0.25);
+  border-bottom: 1px solid rgba(40,32,26,0.15);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ed-ink);
+  flex-shrink: 0;
+}
+[data-site-theme="editorial"] .header__utility-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+[data-site-theme="editorial"] .header__utility-sep {
+  opacity: 0.3;
 }
 [data-site-theme="editorial"] .header__link {
   font-size: 0.7rem;
@@ -330,6 +336,37 @@ input[type="reset"], .cursor-pointer {
   color: var(--ed-red);
 }
 [data-site-theme="editorial"] .header__burger-line { background: var(--ed-ink); }
+
+/* ─── Logo image kept in editorial (logo-text stays hidden) ─────── */
+[data-site-theme="editorial"] .header__desktop {
+  height: auto;
+  padding: 0.6rem 0;
+}
+[data-site-theme="editorial"] .header__mobile {
+  height: auto !important;
+  padding: 0.5rem 0;
+}
+
+@media (max-width: 640px) {
+  [data-site-theme="editorial"] .header__utility-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.35rem 1rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.12em;
+  }
+
+  [data-site-theme="editorial"] .header__utility-bar-right {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  [data-site-theme="editorial"] .header__mobile {
+    padding: 0.35rem 0;
+  }
+}
+
 
 /* ─── Ticker (BLUE, not yellow) ──────────── */
 .editorial-ticker { display: none; }
@@ -468,21 +505,87 @@ input[type="reset"], .cursor-pointer {
   background: linear-gradient(to bottom, var(--ed-ink), transparent);
 }
 
-/* ─── Featured film card ──────────────────── */
+/* ─── Featured film card — full-height vertical panel ─────────── */
 .hero__featured-card { display: none; }
 [data-site-theme="editorial"] .hero__featured-card {
   display: block;
-  flex: 0 0 40%;
+  flex: 0 0 48%;
+  /* Yellow frame: background shows through as top + left border */
+  background: var(--ed-yellow);
+  padding: 20px 0 0 20px;
 }
 [data-site-theme="editorial"] .hero__right { display: none !important; }
+
+/* Full-width hero: remove container constraints so panel reaches viewport edge */
+[data-site-theme="editorial"] .hero .container {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0 !important;
+}
+[data-site-theme="editorial"] .hero__layout {
+  align-items: stretch;
+  gap: 0;
+  min-height: 100vh;
+}
+/* Left text: restore top clearance (header height) via its own padding */
+[data-site-theme="editorial"] .hero__left {
+  padding-top: clamp(96px, 12vw, 130px);
+  padding-left: clamp(1.5rem, 5vw, 5rem);
+  padding-right: clamp(1rem, 3vw, 3rem);
+  padding-bottom: 4rem;
+}
+
+@media (max-width: 899px) {
+  [data-site-theme="editorial"] .hero__layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  [data-site-theme="editorial"] .hero__left {
+    padding: 7rem 1.5rem 3rem;
+  }
+
+  [data-site-theme="editorial"] .hero__featured-card {
+    flex: none;
+    width: 100%;
+    padding: 12px 0 0;
+  }
+
+  [data-site-theme="editorial"] .hero__featured-inner {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  [data-site-theme="editorial"] .hero__title {
+    font-size: clamp(2.55rem, 13vw, 3.4rem);
+  }
+
+  [data-site-theme="editorial"] .hero__label {
+    letter-spacing: 0.2em;
+  }
+
+  [data-site-theme="editorial"] .hero__cta--catalog,
+  [data-site-theme="editorial"] .hero__cta-secondary--outlined {
+    width: 100%;
+    justify-content: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 .hero__featured-inner {
   position: relative;
   width: 100%;
   height: 100%;
   min-height: 380px;
-  border: 2px solid var(--ed-ink);
-  box-shadow: 8px 8px 0px var(--ed-ink);
+  border: none;
+  box-shadow: none;
   overflow: hidden;
+}
+[data-site-theme="editorial"] .hero__featured-inner {
+  min-height: 100vh;
 }
 .hero__featured-img { object-fit: cover; }
 .hero__featured-overlay {
@@ -614,6 +717,18 @@ input[type="reset"], .cursor-pointer {
 [data-site-theme="editorial"] .filmes-grid > div:nth-child(3) { margin-top: 6rem; }
 [data-site-theme="editorial"] .filmes-grid > div:nth-child(4) { margin-top: 0; }
 
+@media (max-width: 767px) {
+  [data-site-theme="editorial"] .filmes-grid > div:nth-child(n) {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  [data-site-theme="editorial"] .filmes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── Cards — print border + offset shadow ── */
 [data-site-theme="editorial"] .card {
   border: 2px solid var(--ed-ink) !important;
@@ -627,8 +742,15 @@ input[type="reset"], .cursor-pointer {
   border-color: var(--ed-ink) !important;
 }
 
-/* ─── Posts grid ──────────────────────────── */
+/* ─── Posts grid — cascade waterfall (editorial) ─────────────────── */
 [data-site-theme="editorial"] .posts-grid .card { margin-bottom: 0; }
+@media (min-width: 768px) {
+  [data-site-theme="editorial"] .posts-grid {
+    align-items: start;
+  }
+  [data-site-theme="editorial"] .posts-grid > div:nth-child(2) { margin-top: 3rem; }
+  [data-site-theme="editorial"] .posts-grid > div:nth-child(3) { margin-top: 6rem; }
+}
 
 /* ─── Apoiadores — dark bg split ─────────── */
 .apoiadores-editorial { display: none; }
@@ -739,6 +861,46 @@ input[type="reset"], .cursor-pointer {
 }
 .apoiadores-editorial__cat-names span:hover { color: var(--ed-paper); }
 
+@media (max-width: 767px) {
+  [data-site-theme="editorial"] .apoiadores-editorial {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .apoiadores-editorial__left,
+  .apoiadores-editorial__right {
+    padding: 2rem 1.5rem;
+  }
+
+  .apoiadores-editorial__left {
+    border-right: 0;
+    border-bottom: 2px solid var(--ed-ink);
+  }
+
+  .apoiadores-editorial__btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .apoiadores-editorial__label,
+  .apoiadores-editorial__cat-label {
+    letter-spacing: 0.16em;
+  }
+
+  .apoiadores-editorial__title {
+    font-size: clamp(2.25rem, 15vw, 3rem);
+  }
+
+  .apoiadores-editorial__cat-names {
+    gap: 0.4rem 1rem;
+  }
+}
+
 /* ─── CTA section — amber/yellow ─────────── */
 [data-site-theme="editorial"] .cta-section {
   background: var(--ed-yellow) !important;
@@ -790,6 +952,9 @@ input[type="reset"], .cursor-pointer {
 /* ─── Footer ──────────────────────────────── */
 [data-site-theme="editorial"] .footer {
   border-top: 2px solid var(--ed-ink);
+}
+[data-site-theme="editorial"] .footer__logo-img {
+  height: 72px;
 }
 [data-site-theme="editorial"] .footer__social-link {
   border: 1px solid rgba(246,241,227,0.2);
@@ -1486,3 +1651,115 @@ input[type="reset"], .cursor-pointer {
   text-decoration: none;
 }
 [data-site-theme="editorial"] .back-link:hover { opacity: 0.75; }
+
+/* ═══════════════════════════════════════════
+   MOBILE RESPONSIVE FIXES
+   480 = small phones | 640 = phones | 768 = tablets | 1024 = mobile header
+   ═══════════════════════════════════════════ */
+
+/* ─── Global section padding ─── */
+@media (max-width: 767px) {
+  .section { padding: 3rem 0; }
+}
+
+/* ─── Header logo: reduce height for mobile header ─── */
+@media (max-width: 1024px) {
+  .header__logo-img { height: 80px; }
+  .header__mobile { height: 96px; }
+}
+@media (max-width: 480px) {
+  .header__logo-img { height: 64px; }
+  .header__mobile { height: 80px; }
+}
+
+/* ─── Hero: reduce padding-top and simplify actions ─── */
+@media (max-width: 1024px) {
+  .hero__content { padding-top: 96px; }
+}
+@media (max-width: 480px) {
+  .hero__content { padding-top: 80px; }
+  .hero__subtitle { font-size: 1rem; margin-bottom: 2rem; }
+  .hero__actions { flex-direction: column; align-items: stretch; gap: 0.875rem; }
+  .hero__cta,
+  .hero__cta-secondary--outlined { width: 100%; justify-content: center; text-align: center; }
+  .hero__cta-secondary { text-align: center; }
+}
+
+/* ─── Page inner header sections: adjust padding-top ─── */
+@media (max-width: 1024px) {
+  .page-header-section { padding-top: 100px !important; }
+}
+@media (max-width: 480px) {
+  .page-header-section { padding-top: 84px !important; }
+}
+
+/* ─── Filter / year buttons: minimum 44px touch target ─── */
+.filter-btn,
+.year-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Filmes catalog: single column on very small phones ─── */
+@media (max-width: 380px) {
+  .filmes-catalog,
+  .filmes-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Film modal: bottom sheet on mobile ─── */
+@media (max-width: 640px) {
+  .film-modal { padding: 0; align-items: flex-end; }
+  .film-modal__content {
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+  }
+  .film-modal__body { padding: 1.25rem 1rem 2rem; }
+  .film-modal__close {
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-secondary);
+    border-radius: 50%;
+    font-size: 1rem;
+  }
+}
+
+/* ─── Timeline: more breathing room on very small phones ─── */
+@media (max-width: 380px) {
+  .timeline { padding-left: 44px; }
+  .timeline::before { left: 22px; }
+  .timeline-item__year { left: -44px; width: 44px; }
+  .timeline-item__year-text { width: 20px; font-size: 0.75rem; }
+}
+
+/* ─── Contact form: tighter padding on small phones ─── */
+@media (max-width: 380px) {
+  .contato-form-wrap { padding: 1.25rem; }
+}
+
+/* ─── Footer: compact on mobile ─── */
+@media (max-width: 640px) {
+  .footer { padding-top: 3rem; }
+  .footer__inner { padding-bottom: 2rem; gap: 2rem; }
+}
+
+/* ─── Numbers grid: reduce gap on small phones ─── */
+@media (max-width: 480px) {
+  .numbers { gap: 1.25rem; }
+}
+
+/* ─── Editorial apoiadores: tighter padding on tiny screens ─── */
+@media (max-width: 380px) {
+  .apoiadores-editorial__left,
+  .apoiadores-editorial__right { padding: 1.5rem 1rem; }
+}
+
+/* ─── Global overflow safety net ─── */
+img, svg, video, iframe { max-width: 100%; }
