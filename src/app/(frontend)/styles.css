@@ -539,6 +539,25 @@ input[type="reset"], .cursor-pointer {
   padding-right: clamp(1rem, 3vw, 3rem);
 }
 
+@media (min-width: 768px) and (max-width: 1024px) {
+  [data-site-theme="editorial"] .hero__left {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+
+  [data-site-theme="editorial"] .hero__featured-card {
+    flex: 0 0 42%;
+    padding: 14px 0 0 14px;
+  }
+
+  [data-site-theme="editorial"] .hero__title {
+    font-size: clamp(2.8rem, 5vw, 3.8rem);
+  }
+
+  /* Sections: slightly less padding on tablet */
+  .section { padding: 4rem 0; }
+}
+
 @media (max-width: 899px) {
   [data-site-theme="editorial"] .hero__layout {
     flex-direction: column;
@@ -1666,17 +1685,15 @@ input[type="reset"], .cursor-pointer {
 }
 
 /* ─── Header logo: reduce height for mobile header ─── */
-@media (max-width: 1024px) {
-  .header__logo-img { height: 80px; }
-  .header__mobile { height: 96px; }
+@media (max-width: 767px) {
+  .header__logo-img { height: 72px; }
 }
 @media (max-width: 480px) {
   .header__logo-img { height: 64px; }
-  .header__mobile { height: 80px; }
 }
 
 /* ─── Hero: reduce padding-top and simplify actions ─── */
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
   .hero__content { padding-top: 96px; }
 }
 @media (max-width: 480px) {
@@ -1705,16 +1722,28 @@ input[type="reset"], .cursor-pointer {
 .breadcrumb-section { padding-top: 156px !important; }
 [data-site-theme="editorial"] .breadcrumb-section { padding-top: 188px !important; }
 
-@media (max-width: 1024px) {
-  /* Mobile header ≈ 96px */
-  .page-header-section { padding-top: 112px !important; }
-  .bora-hero { padding-top: 112px !important; }
-  .metodo-hero { padding-top: 112px !important; }
-  [data-site-theme="editorial"] .page-header-section { padding-top: 130px !important; }
-  [data-site-theme="editorial"] .bora-hero { padding-top: 130px !important; }
-  [data-site-theme="editorial"] .metodo-hero { padding-top: 130px !important; }
-  .breadcrumb-section { padding-top: 106px !important; }
-  [data-site-theme="editorial"] .breadcrumb-section { padding-top: 124px !important; }
+/* Tablet: header = 100px → needs ~120px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .page-header-section { padding-top: 128px !important; }
+  .bora-hero { padding-top: 128px !important; }
+  .metodo-hero { padding-top: 128px !important; }
+  [data-site-theme="editorial"] .page-header-section { padding-top: 152px !important; }
+  [data-site-theme="editorial"] .bora-hero { padding-top: 152px !important; }
+  [data-site-theme="editorial"] .metodo-hero { padding-top: 152px !important; }
+  .breadcrumb-section { padding-top: 120px !important; }
+  [data-site-theme="editorial"] .breadcrumb-section { padding-top: 144px !important; }
+}
+
+/* Phone: mobile header ≈ 88px */
+@media (max-width: 767px) {
+  .page-header-section { padding-top: 106px !important; }
+  .bora-hero { padding-top: 106px !important; }
+  .metodo-hero { padding-top: 106px !important; }
+  [data-site-theme="editorial"] .page-header-section { padding-top: 124px !important; }
+  [data-site-theme="editorial"] .bora-hero { padding-top: 124px !important; }
+  [data-site-theme="editorial"] .metodo-hero { padding-top: 124px !important; }
+  .breadcrumb-section { padding-top: 100px !important; }
+  [data-site-theme="editorial"] .breadcrumb-section { padding-top: 118px !important; }
 }
 @media (max-width: 480px) {
   /* Mobile header ≈ 80px */

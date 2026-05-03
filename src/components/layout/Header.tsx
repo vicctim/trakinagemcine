@@ -306,8 +306,19 @@ export function Header() {
           gap: 2rem;
         }
 
-        /* ─── Mobile layout (hidden by default, show on ≤1024px) ─── */
-        @media (max-width: 1024px) {
+        /* ─── Tablet (768-1024): show desktop nav in compact mode ─── */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .header__desktop {
+            display: grid;
+            height: 100px;
+            gap: 1rem;
+          }
+
+          .header__mobile { display: none !important; }
+        }
+
+        /* ─── Mobile layout (hidden by default, show on ≤767px) ─── */
+        @media (max-width: 767px) {
           .header__desktop { display: none; }
         }
 
@@ -343,6 +354,11 @@ export function Header() {
           display: block;
         }
 
+        /* Tablet: compact logo */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .header__logo-img { height: 72px; }
+        }
+
         .header__logo:hover .header__logo-img {
           opacity: 0.85;
           transform: scale(1.02);
@@ -365,6 +381,13 @@ export function Header() {
           align-items: center;
           gap: 0.3rem;
           cursor: pointer;
+        }
+
+        /* Tablet: smaller nav links */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .header__link { font-size: 0.7rem; }
+          .header__nav-left,
+          .header__nav-right { gap: 1rem; }
         }
 
         .header__link::after {
@@ -468,22 +491,22 @@ export function Header() {
           display: none;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 767px) {
           .header__mobile {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 130px;
+            height: 88px;
           }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 480px) {
           .header__mobile {
-            height: 88px;
+            height: 80px;
           }
 
           .header__logo-img {
-            height: 78px;
+            height: 64px;
           }
         }
 
