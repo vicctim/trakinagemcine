@@ -49,7 +49,7 @@ export function Footer() {
           <Link href="/" className="footer__logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/logo-trakinagemcine.png"
+              src="/images/logo-trakinagemcine-branco.png"
               alt="Trakinagem Cine"
               className="footer__logo-img"
             />
