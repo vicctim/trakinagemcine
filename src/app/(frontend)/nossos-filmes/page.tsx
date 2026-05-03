@@ -3,7 +3,7 @@ import { getPayloadClient } from '@/lib/payload'
 import FilmesClient from './FilmesClient'
 import type { Metadata } from 'next'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Nossos Filmes — Trakinagem Cine',

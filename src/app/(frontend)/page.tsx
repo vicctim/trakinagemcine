@@ -2,7 +2,7 @@ import React from 'react'
 import { getPayloadClient } from '@/lib/payload'
 import HomeClient from './HomeClient'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const payload = await getPayloadClient()

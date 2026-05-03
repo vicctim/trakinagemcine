@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 function getMediaUrl(media: any): string {
   if (!media) return ''

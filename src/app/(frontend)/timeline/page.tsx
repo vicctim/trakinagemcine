@@ -5,7 +5,7 @@ import { Calendar } from 'lucide-react'
 import type { Metadata } from 'next'
 import TimelineClient from './TimelineClient'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Timeline — Trakinagem Cine',

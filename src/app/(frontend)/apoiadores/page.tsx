@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Handshake } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Apoiadores — Trakinagem Cine',

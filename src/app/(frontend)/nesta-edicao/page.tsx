@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { Calendar } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Nesta Edição — Trakinagem Cine',
