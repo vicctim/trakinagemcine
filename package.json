@@ -1,0 +1,48 @@
+{
+  "name": "trakinagemcine",
+  "version": "1.0.0",
+  "description": "Trakinagem Cine — Projeto cultural audiovisual",
+  "license": "UNLICENSED",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbopack",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "latest",
+    "@payloadcms/next": "latest",
+    "@payloadcms/richtext-lexical": "latest",
+    "@payloadcms/ui": "latest",
+    "cross-env": "^7.0.3",
+    "framer-motion": "^12.0.0",
+    "graphql": "^16.8.1",
+    "gsap": "^3.12.0",
+    "lucide-react": "^1.8.0",
+    "next": "15.3.9",
+    "payload": "latest",
+    "react": "^19.0.0",
+    "react-countup": "^6.5.0",
+    "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.0.0",
+    "sharp": "0.34.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "15.3.9",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

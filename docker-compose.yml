@@ -1,0 +1,48 @@
+services:
+  # ── App (Next.js + Payload CMS) ─────────────────────────────
+  app:
+    build: .
+    container_name: trakinagemcine
+    ports:
+      - "3006:3000"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+    networks:
+      - trakinagem_network
+      - rede_publica
+    restart: unless-stopped
+
+  # ── PostgreSQL ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: trakinagemcine_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-trakinagemcine}
+      POSTGRES_USER: ${DB_USER:-trakinagem}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-trkng_dev_2026}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - trakinagem_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-trakinagem}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  media_data:
+
+networks:
+  trakinagem_network:
+    driver: bridge
+  rede_publica:
+    external: true

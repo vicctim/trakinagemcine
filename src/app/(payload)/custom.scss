@@ -1,0 +1,198 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Trakinagem Cine — Payload CMS Admin Custom Theme
+// Based on IPDSA minimalist UI pattern + Trakinagem brand identity
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Brand tokens ──────────────────────────────────────────────────────────
+:root {
+  --tk-red:       #D32F2F;
+  --tk-red-hover: #B71C1C;
+  --tk-green:     #2E7D32;
+  --tk-dark:      #1A1A1A;
+  --tk-radius:    6px;
+}
+
+// ─── Logo / branding in nav ─────────────────────────────────────────────────
+.nav__brand-wrap,
+.nav .nav__logo {
+  // Keep existing logo size; ensure alt text is visible
+  max-width: 160px;
+}
+
+// ─── Sidebar navigation groups (IPDSA pattern) ──────────────────────────────
+.nav-group {
+  margin-top: 1.25rem;
+
+  .nav-group__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--tk-red) !important;
+    opacity: 0.85;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--theme-elevation-100);
+    margin-bottom: 0.25rem;
+  }
+}
+
+// ─── Sidebar nav links ──────────────────────────────────────────────────────
+.nav__link {
+  border-radius: var(--tk-radius);
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--theme-elevation-50) !important;
+    color: var(--tk-red) !important;
+  }
+
+  &.active,
+  &[aria-current="page"] {
+    background: rgba(211, 47, 47, 0.08) !important;
+    color: var(--tk-red) !important;
+    font-weight: 600;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: var(--tk-red);
+      border-radius: 0 2px 2px 0;
+    }
+
+    a { position: relative; }
+  }
+}
+
+// ─── Primary buttons (Save, Publish, etc.) ──────────────────────────────────
+.btn--style-primary,
+.pill-selector--selected,
+[class*="btn"][class*="primary"] {
+  background: var(--tk-red) !important;
+  border-color: var(--tk-red) !important;
+
+  &:hover {
+    background: var(--tk-red-hover) !important;
+    border-color: var(--tk-red-hover) !important;
+  }
+}
+
+// ─── Focus rings ────────────────────────────────────────────────────────────
+input:focus,
+textarea:focus,
+select:focus,
+[role="combobox"]:focus {
+  border-color: var(--tk-red) !important;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.12) !important;
+  outline: none !important;
+}
+
+// ─── Status badges (published = green, draft = neutral) ─────────────────────
+.pill--style-success {
+  background: rgba(46, 125, 50, 0.12) !important;
+  color: var(--tk-green) !important;
+}
+
+// ─── Collection list view ───────────────────────────────────────────────────
+.table .table__header-wrap {
+  border-bottom: 2px solid var(--theme-elevation-100);
+}
+
+.table .row--selected {
+  background: rgba(211, 47, 47, 0.04) !important;
+}
+
+// ─── Upload area ────────────────────────────────────────────────────────────
+.upload-dropzone:hover,
+.upload-dropzone--active {
+  border-color: var(--tk-red) !important;
+  background: rgba(211, 47, 47, 0.03) !important;
+}
+
+// ─── Rich text toolbar ──────────────────────────────────────────────────────
+.rich-text .toolbar {
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+// ─── Checkbox & radio accents ───────────────────────────────────────────────
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  accent-color: var(--tk-red);
+}
+
+// ─── Admin page layout max-width ────────────────────────────────────────────
+.render-default-cell--selected {
+  color: var(--tk-red) !important;
+}
+
+// ─── Collapsible blocks — fix text overlap ──────────────────────────────────
+.collapsible__toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+
+  .collapsible__toggle {
+    color: var(--tk-red);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  // The label/title text — ensure it doesn't overlap button
+  > span,
+  > label,
+  > .label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+// Extra: ensure collapsible header row stacks correctly
+.collapsible > .collapsible__header,
+.collapsible > .collapsible__toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+
+  // Reset any absolute that causes overlap
+  * { position: static; }
+}
+
+// ─── Document controls area (sidebar) ──────────────────────────────────────
+.doc-controls {
+  border-left: 1px solid var(--theme-elevation-100);
+}
+
+// ─── Dashboard page specific ────────────────────────────────────────────────
+// Remove default template wrapper padding when using custom dashboard
+.dashboard .template-default__wrap {
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+// ─── Breadcrumbs ────────────────────────────────────────────────────────────
+.step-nav {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+// ─── Toast notifications ────────────────────────────────────────────────────
+.toast--success {
+  border-left: 3px solid var(--tk-green) !important;
+}
+
+.toast--error {
+  border-left: 3px solid var(--tk-red) !important;
+}

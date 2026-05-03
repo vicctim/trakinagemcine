@@ -1,0 +1,546 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════
+   Trakinagem Cine — Design System v3 (LIGHT)
+   Identity: RED + GREEN triangles from logo
+   Light, warm, accessible — for youth & education
+   ═══════════════════════════════════════════ */
+
+@theme {
+  /* Typography */
+  --font-heading: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
+
+  /* ─── Brand Colors (from logo) ─── */
+  --color-brand-red: #D32F2F;
+  --color-brand-red-hover: #B71C1C;
+  --color-brand-red-soft: rgba(211, 47, 47, 0.08);
+  --color-brand-green: #2E7D32;
+  --color-brand-green-hover: #1B5E20;
+  --color-brand-green-soft: rgba(46, 125, 50, 0.06);
+
+  /* ─── UI Colors (Light Theme) ─── */
+  --color-bg-primary: #FAFAF8;
+  --color-bg-secondary: #F2F1EE;
+  --color-bg-tertiary: #E8E7E3;
+  --color-bg-white: #FFFFFF;
+  --color-accent: #D32F2F;
+  --color-accent-hover: #E53935;
+  --color-accent-soft: rgba(211, 47, 47, 0.08);
+  --color-accent-secondary: #2E7D32;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-muted: #8A8A8A;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.15);
+
+  /* ─── Dark Surfaces (for hero, header, footer) ─── */
+  --color-dark-bg: #1A1A1A;
+  --color-dark-bg-secondary: #222222;
+  --color-dark-text: #F0EDE8;
+  --color-dark-text-muted: #999999;
+  --color-dark-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ═══════════════════════════════════════════
+   Base Reset
+   ═══════════════════════════════════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   Typography
+   ═══════════════════════════════════════════ */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: clamp(2.5rem, 5vw + 1rem, 5rem); }
+h2 { font-size: clamp(1.75rem, 3vw + 0.5rem, 3rem); }
+h3 { font-size: clamp(1.25rem, 2vw + 0.25rem, 2rem); }
+
+p {
+  color: var(--color-text-secondary);
+  max-width: 65ch;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ═══════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 3rem;
+  }
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.section-alt {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Dark sections (hero, footer, CTA) */
+.section-dark {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4 {
+  color: var(--color-dark-text);
+}
+
+.section-dark p {
+  color: var(--color-dark-text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   Cursor — standard behavior
+   ═══════════════════════════════════════════ */
+
+body {
+  cursor: default;
+}
+
+a, button, [role="button"],
+label[for], summary, select,
+input[type="submit"], input[type="button"],
+input[type="reset"], .cursor-pointer {
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════
+   Scrollbar
+   ═══════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* ═══════════════════════════════════════════
+   Selection
+   ═══════════════════════════════════════════ */
+
+::selection {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════
+   Editorial Theme — Estilo Revista de Cinema
+   Activated via [data-site-theme="editorial"] on <html>
+   Cores: fundo claro / vermelho / verde / amarelo âmbar
+   ═══════════════════════════════════════════ */
+
+/* ─── Ticker ─────────────────────────────── */
+.editorial-ticker {
+  display: none;
+}
+[data-site-theme="editorial"] .editorial-ticker {
+  display: flex;
+  align-items: center;
+  background: #F5C842;
+  overflow: hidden;
+  height: 40px;
+  white-space: nowrap;
+  border-bottom: none;
+}
+.editorial-ticker__track {
+  display: inline-flex;
+  animation: ticker-scroll 25s linear infinite;
+  gap: 0;
+}
+.editorial-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1A1A1A;
+}
+.editorial-ticker__sep {
+  color: #D32F2F;
+  font-size: 0.5rem;
+}
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── Featured film card in hero right ─── */
+.hero__featured-card {
+  display: none;
+}
+[data-site-theme="editorial"] .hero__featured-card {
+  display: block;
+  flex: 0 0 42%;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  max-height: 420px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+}
+[data-site-theme="editorial"] .hero__right {
+  display: none !important;
+}
+.hero__featured-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+.hero__featured-img {
+  object-fit: cover;
+}
+.hero__featured-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  z-index: 1;
+}
+.hero__featured-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.25rem;
+  z-index: 2;
+  color: #fff;
+}
+.hero__featured-badges {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.hero__featured-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  background: #D32F2F;
+  color: #fff;
+}
+.hero__featured-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+.hero__featured-ep {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ─── Hero overrides for editorial ───────── */
+[data-site-theme="editorial"] .hero {
+  background: #FAFAF8;
+}
+[data-site-theme="editorial"] .hero__overlay {
+  background: linear-gradient(
+    to right,
+    rgba(250,250,248,1) 0%,
+    rgba(250,250,248,0.9) 45%,
+    rgba(250,250,248,0.1) 100%
+  );
+}
+[data-site-theme="editorial"] .hero__label {
+  color: #2E7D32;
+}
+[data-site-theme="editorial"] .hero__title {
+  color: #1A1A1A;
+}
+[data-site-theme="editorial"] .hero__title-accent {
+  color: #D32F2F;
+  font-style: italic;
+}
+[data-site-theme="editorial"] .hero__subtitle {
+  color: #4A4A4A;
+}
+[data-site-theme="editorial"] .hero__cta--catalog {
+  background: #2E7D32;
+  color: #fff;
+}
+[data-site-theme="editorial"] .hero__cta--catalog:hover {
+  background: #1B5E20;
+  box-shadow: 0 4px 20px rgba(46,125,50,0.35);
+}
+[data-site-theme="editorial"] .hero__cta-secondary--outlined {
+  border: 1.5px solid #1A1A1A;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #1A1A1A;
+  transition: all 0.2s;
+}
+[data-site-theme="editorial"] .hero__cta-secondary--outlined:hover {
+  background: #1A1A1A;
+  color: #fff;
+}
+[data-site-theme="editorial"] .hero__scroll-line {
+  background: linear-gradient(to bottom, #2E7D32, transparent);
+}
+
+/* ─── Numbers section — colored cards ────── */
+[data-site-theme="editorial"] .numbers-section {
+  padding: 0;
+  background: transparent !important;
+}
+[data-site-theme="editorial"] .numbers-section .container {
+  max-width: 100%;
+  padding: 0;
+}
+[data-site-theme="editorial"] .numbers {
+  gap: 0;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px) {
+  [data-site-theme="editorial"] .numbers {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+[data-site-theme="editorial"] .numbers .counter {
+  padding: 2.75rem 1.5rem;
+  gap: 0.5rem;
+}
+[data-site-theme="editorial"] .numbers .counter:nth-child(1) { background: #D32F2F; }
+[data-site-theme="editorial"] .numbers .counter:nth-child(2) { background: #2E7D32; }
+[data-site-theme="editorial"] .numbers .counter:nth-child(3) { background: #1565C0; }
+[data-site-theme="editorial"] .numbers .counter:nth-child(4) { background: #F5C842; }
+[data-site-theme="editorial"] .numbers .counter:nth-child(4) .counter__label {
+  color: #1A1A1A;
+}
+[data-site-theme="editorial"] .numbers .counter__value {
+  color: #fff;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+[data-site-theme="editorial"] .numbers .counter:nth-child(4) .counter__value {
+  color: #1A1A1A;
+}
+[data-site-theme="editorial"] .numbers .counter__label {
+  color: #fff;
+  opacity: 0.9;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── Section headers — editorial style ─── */
+[data-site-theme="editorial"] .section-header__label::before {
+  content: '# ';
+  color: #D32F2F;
+}
+[data-site-theme="editorial"] .section-header__accent {
+  font-style: italic;
+}
+
+/* ─── Apoiadores — show/hide ─────────────── */
+.apoiadores-editorial { display: none; }
+.apoiadores-default { display: block; }
+
+[data-site-theme="editorial"] .apoiadores-editorial {
+  display: flex;
+  align-items: stretch;
+  min-height: 320px;
+}
+[data-site-theme="editorial"] .apoiadores-default {
+  display: none;
+}
+.apoiadores-editorial__left {
+  flex: 0 0 40%;
+  background: #D32F2F;
+  color: #fff;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.apoiadores-editorial__right {
+  flex: 1;
+  background: #FAFAF8;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.apoiadores-editorial__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.apoiadores-editorial__title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #fff;
+}
+.apoiadores-editorial__title em {
+  font-style: italic;
+}
+.apoiadores-editorial__desc {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  opacity: 0.88;
+  max-width: 38ch;
+}
+.apoiadores-editorial__btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: auto;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+.apoiadores-editorial__btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+.apoiadores-editorial__cat-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8A8A8A;
+  margin-bottom: 0.4rem;
+}
+.apoiadores-editorial__cat-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+.apoiadores-editorial__cat-names span {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+/* ─── CTA section — amber/yellow ─────────── */
+[data-site-theme="editorial"] .cta-section {
+  background: #F5C842 !important;
+}
+[data-site-theme="editorial"] .cta-box__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1A1A1A;
+  opacity: 0.6;
+  margin-bottom: 1rem;
+  display: block !important;
+}
+[data-site-theme="editorial"] .cta-box__title {
+  color: #1A1A1A;
+}
+[data-site-theme="editorial"] .cta-highlight {
+  color: #D32F2F;
+  font-style: italic;
+}
+[data-site-theme="editorial"] .cta-box__text {
+  color: #4A4A4A;
+}
+[data-site-theme="editorial"] .cta-section__btn {
+  background: #1A1A1A;
+  color: #fff;
+}
+[data-site-theme="editorial"] .cta-section__btn:hover {
+  background: #333;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+/* ─── Film cards — editorial dark overlay ── */
+[data-site-theme="editorial"] .filmes-grid {
+  gap: 1rem;
+}
+
+/* ─── General section alternates ─────────── */
+[data-site-theme="editorial"] .section-alt {
+  background-color: #F2F1EE;
+}
+[data-site-theme="editorial"] .apoiadores-section {
+  background: transparent !important;
+  padding: 0;
+}
+
+/* ─── Scrollbar ─────────────────────────── */
+[data-site-theme="editorial"] ::-webkit-scrollbar-thumb:hover {
+  background: #D32F2F;
+}
