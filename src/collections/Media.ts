@@ -6,6 +6,8 @@ export const Media: CollectionConfig = {
   labels: { singular: 'Mídia', plural: 'Mídias' },
   admin: {
     group: 'Sistema',
+    description:
+      '🖼️ Biblioteca central de imagens, vídeos e PDFs. Faça upload aqui antes de criar conteúdo — depois é só selecionar a imagem nos campos de cada post/filme.',
   },
   access: {
     read: () => true,
@@ -13,9 +15,13 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'alt',
-      label: 'Texto alternativo',
+      label: 'Texto alternativo (Alt)',
       type: 'text',
       required: true,
+      admin: {
+        description:
+          'Descrição curta da imagem para acessibilidade (ex: "Jovens segurando câmera no set"). Ajuda no SEO e leitores de tela.',
+      },
     },
   ],
   upload: {

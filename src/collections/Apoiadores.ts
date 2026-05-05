@@ -7,6 +7,8 @@ export const Apoiadores: CollectionConfig = {
     useAsTitle: 'nome',
     defaultColumns: ['nome', 'categoria'],
     group: 'Conteúdo',
+    description:
+      '🤝 Empresas, instituições e parceiros que apoiam o projeto. Logos aparecem na home, em "Nesta Edição" e na página "Apoiadores".',
   },
   access: {
     read: () => true,
@@ -14,9 +16,12 @@ export const Apoiadores: CollectionConfig = {
   fields: [
     {
       name: 'nome',
-      label: 'Nome',
+      label: 'Nome do apoiador',
       type: 'text',
       required: true,
+      admin: {
+        description: 'Nome da empresa ou instituição. Aparece como tooltip ao passar o mouse no logo.',
+      },
     },
     {
       name: 'logo',
@@ -24,6 +29,9 @@ export const Apoiadores: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       required: true,
+      admin: {
+        description: 'Logomarca em PNG transparente, fundo branco ou SVG. Mínimo 300px de largura.',
+      },
     },
     {
       name: 'categoria',
@@ -31,12 +39,16 @@ export const Apoiadores: CollectionConfig = {
       type: 'select',
       required: true,
       options: [
-        { label: 'Lei de Incentivo', value: 'lei_incentivo' },
-        { label: 'Patrocinador', value: 'patrocinador' },
-        { label: 'Apoiador', value: 'apoiador' },
-        { label: 'Parceiro', value: 'parceiro' },
+        { label: '🏛️ Lei de Incentivo', value: 'lei_incentivo' },
+        { label: '⭐ Patrocinador', value: 'patrocinador' },
+        { label: '🤝 Apoiador', value: 'apoiador' },
+        { label: '🔗 Parceiro', value: 'parceiro' },
       ],
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description:
+          'Categoria do apoio. Define em qual seção da página de apoiadores o logo será agrupado.',
+      },
     },
     {
       name: 'edicoes',
@@ -44,11 +56,17 @@ export const Apoiadores: CollectionConfig = {
       type: 'relationship',
       relationTo: 'edicoes',
       hasMany: true,
+      admin: {
+        description: 'Selecione todas as edições onde este apoiador participou.',
+      },
     },
     {
       name: 'website',
-      label: 'Website',
+      label: 'Website (opcional)',
       type: 'text',
+      admin: {
+        description: 'URL completa (https://...). O logo vira link clicável.',
+      },
     },
     {
       name: 'isMock',

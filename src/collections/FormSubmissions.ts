@@ -7,7 +7,8 @@ export const FormSubmissions: CollectionConfig = {
     useAsTitle: 'nome',
     defaultColumns: ['nome', 'email', 'cidade', 'estado', 'createdAt'],
     group: 'CRM',
-    description: 'Mensagens recebidas via formulário de contato do site.',
+    description:
+      '✉️ Mensagens recebidas via formulário "Vamos Juntos" do site. Cidade/Estado são detectados automaticamente pelo IP. Não envie respostas por aqui — use seu e-mail.',
   },
   access: {
     read: ({ req: { user } }) => Boolean(user),

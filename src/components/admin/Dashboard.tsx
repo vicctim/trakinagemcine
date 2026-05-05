@@ -23,6 +23,16 @@ interface RecentMsg {
   createdAt: string
 }
 
+interface OnboardingChecks {
+  hasMedia: boolean
+  hasHeroImage: boolean
+  hasContactEmail: boolean
+  hasActiveEdicao: boolean
+  hasPublishedPost: boolean
+  hasFilme: boolean
+  hasApoiador: boolean
+}
+
 // ─── Icon components (lucide-compatible, no import needed) ──────────────────
 const IconFilm = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -108,6 +118,8 @@ export const Dashboard: React.FC = () => {
   const [themeLoading, setThemeLoading] = useState(false)
   const [mockLoading, setMockLoading] = useState(false)
   const [mockMsg, setMockMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  const [checks, setChecks] = useState<OnboardingChecks | null>(null)
+  const [showOnboarding, setShowOnboarding] = useState(true)
 
   const toggleTheme = useCallback(async () => {
     const next = theme === 'default' ? 'editorial' : 'default'
@@ -187,11 +199,12 @@ export const Dashboard: React.FC = () => {
         setUserName(fullName.split(' ')[0]) // first name only
       }
 
-      // Fetch current theme from site-config
+      // Fetch current theme + onboarding signals from site-config
+      let siteCfg: any = null
       const cfgRes = await fetch('/api/globals/site-config?depth=0', { headers }).catch(() => null)
       if (cfgRes?.ok) {
-        const cfg = await cfgRes.json().catch(() => ({}))
-        setTheme(cfg?.theme || 'default')
+        siteCfg = await cfgRes.json().catch(() => ({}))
+        setTheme(siteCfg?.theme || 'default')
       }
 
       const [posts, filmes, edicoes, premios, apoiadores, mensagens, usuarios, medias] =
@@ -206,6 +219,25 @@ export const Dashboard: React.FC = () => {
           fetchCount('media'),
         ])
       setStats({ posts, filmes, edicoes, premios, apoiadores, mensagens, usuarios, medias })
+
+      // Onboarding checks (signals of what's set up)
+      const [activeEdicao, publishedPost] = await Promise.all([
+        fetch('/api/edicoes?limit=0&depth=0&where[status][equals]=ativa', { headers })
+          .then((r) => (r.ok ? r.json() : { totalDocs: 0 }))
+          .catch(() => ({ totalDocs: 0 })),
+        fetch('/api/posts?limit=0&depth=0&where[status][equals]=published', { headers })
+          .then((r) => (r.ok ? r.json() : { totalDocs: 0 }))
+          .catch(() => ({ totalDocs: 0 })),
+      ])
+      setChecks({
+        hasMedia: medias > 0,
+        hasHeroImage: Boolean(siteCfg?.heroImage),
+        hasContactEmail: Boolean(siteCfg?.contactEmail),
+        hasActiveEdicao: (activeEdicao?.totalDocs ?? 0) > 0,
+        hasPublishedPost: (publishedPost?.totalDocs ?? 0) > 0,
+        hasFilme: filmes > 0,
+        hasApoiador: apoiadores > 0,
+      })
 
       // Fetch recent messages
       const r = await fetch('/api/form-submissions?limit=5&sort=-createdAt&depth=0', { headers }).catch(() => null)
@@ -371,30 +403,138 @@ export const Dashboard: React.FC = () => {
         </div>
       </section>
 
+      {/* ─── Onboarding Checklist (só aparece se algo está incompleto) ─── */}
+      {checks && showOnboarding && (() => {
+        const items = [
+          { done: checks.hasMedia, label: 'Subir pelo menos uma imagem na Biblioteca de Mídia', link: '/admin/collections/media/create', help: 'Comece pela mídia — todas as outras seções precisam de imagens.' },
+          { done: checks.hasHeroImage, label: 'Definir imagem do Hero (banner principal da Home)', link: '/admin/globals/site-config', help: 'Configure em "Configurações do Site → Imagem do Hero".' },
+          { done: checks.hasContactEmail, label: 'Cadastrar e-mail de contato', link: '/admin/globals/site-config', help: 'Configure em "Configurações do Site → E-mail de contato".' },
+          { done: checks.hasActiveEdicao, label: 'Criar uma Edição ativa (temporada atual)', link: '/admin/collections/edicoes/create', help: 'A edição ativa aparece na página "Nesta Edição".' },
+          { done: checks.hasFilme, label: 'Cadastrar pelo menos um Filme', link: '/admin/collections/filmes/create', help: 'Cada filme deve estar vinculado a uma Edição.' },
+          { done: checks.hasApoiador, label: 'Adicionar Apoiadores/Patrocinadores', link: '/admin/collections/apoiadores/create', help: 'Logos aparecem na home e na página "Apoiadores".' },
+          { done: checks.hasPublishedPost, label: 'Publicar pelo menos uma Quentinha (notícia)', link: '/admin/collections/posts/create', help: 'Lembre-se de mudar o Status para "Publicado".' },
+        ]
+        const completed = items.filter((i) => i.done).length
+        const total = items.length
+        const allDone = completed === total
+        return (
+          <section className="tk-section">
+            <div className="tk-onboarding-card">
+              <div className="tk-onboarding-header">
+                <div>
+                  <h2 className="tk-onboarding-title">
+                    {allDone ? '🎉 Configuração Inicial Completa!' : '🚀 Bem-vindo! Vamos configurar seu site'}
+                  </h2>
+                  <p className="tk-onboarding-sub">
+                    {allDone
+                      ? 'Tudo pronto. Continue criando conteúdo!'
+                      : `${completed} de ${total} passos concluídos — siga a ordem para um site completo.`}
+                  </p>
+                </div>
+                <button className="tk-onboarding-close" onClick={() => setShowOnboarding(false)} title="Ocultar">✕</button>
+              </div>
+              <div className="tk-onboarding-progress">
+                <div className="tk-onboarding-progress-fill" style={{ width: `${(completed / total) * 100}%` }} />
+              </div>
+              <ul className="tk-onboarding-list">
+                {items.map((item, i) => (
+                  <li key={i} className={`tk-onboarding-item ${item.done ? 'is-done' : ''}`}>
+                    <span className="tk-onboarding-check">{item.done ? '✓' : i + 1}</span>
+                    <div className="tk-onboarding-body">
+                      <a href={item.link} className="tk-onboarding-link">{item.label}</a>
+                      <span className="tk-onboarding-help">{item.help}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )
+      })()}
+
       {/* ─── Quick Guide ─── */}
       <section className="tk-section">
-        <h2 className="tk-section-title">Guia Rápido de Uso</h2>
+        <h2 className="tk-section-title">Guia Passo-a-Passo: Como adicionar conteúdo</h2>
         <div className="tk-guide-grid">
           <div className="tk-guide-card">
             <div className="tk-guide-num">1</div>
-            <h3>Quentinhas</h3>
-            <p>São as notícias/posts do site. Crie uma nova, adicione título, conteúdo e publique.</p>
+            <h3>📷 Comece pela Mídia</h3>
+            <p>Antes de tudo, faça upload das imagens em <strong>Mídias</strong>. Toda foto/logo do site mora aqui.</p>
+            <a href="/admin/collections/media" className="tk-guide-link">Ir para Mídias →</a>
           </div>
           <div className="tk-guide-card">
             <div className="tk-guide-num">2</div>
-            <h3>Edições e Filmes</h3>
-            <p>Cada temporada é uma "Edição". Filmes são vinculados à edição correspondente.</p>
+            <h3>⚙️ Configure o site</h3>
+            <p>Em <strong>Configurações do Site</strong>: hero image, título, e-mail de contato e redes sociais.</p>
+            <a href="/admin/globals/site-config" className="tk-guide-link">Configurações →</a>
           </div>
           <div className="tk-guide-card">
             <div className="tk-guide-num">3</div>
-            <h3>Apoiadores</h3>
-            <p>Adicione logomarcas e nomes dos apoiadores/patrocinadores de cada temporada.</p>
+            <h3>🗓️ Crie uma Edição</h3>
+            <p>Cada temporada do projeto é uma <strong>Edição</strong>. Marque como "Ativa" para aparecer em "Nesta Edição".</p>
+            <a href="/admin/collections/edicoes" className="tk-guide-link">Ir para Edições →</a>
           </div>
           <div className="tk-guide-card">
             <div className="tk-guide-num">4</div>
-            <h3>Mídia</h3>
-            <p>Todas as imagens e vídeos ficam centralizados aqui. Envie antes de criar conteúdo.</p>
+            <h3>🎬 Cadastre os Filmes</h3>
+            <p>Em <strong>Filmes</strong>, vincule cada curta à edição correspondente. Cole o link do YouTube.</p>
+            <a href="/admin/collections/filmes" className="tk-guide-link">Ir para Filmes →</a>
           </div>
+          <div className="tk-guide-card">
+            <div className="tk-guide-num">5</div>
+            <h3>🤝 Adicione Apoiadores</h3>
+            <p>Logos aparecem na home e na página de apoiadores. Categorize por tipo de apoio.</p>
+            <a href="/admin/collections/apoiadores" className="tk-guide-link">Ir para Apoiadores →</a>
+          </div>
+          <div className="tk-guide-card">
+            <div className="tk-guide-num">6</div>
+            <h3>📰 Publique Quentinhas</h3>
+            <p>Notícias e bastidores. Mude o Status para <strong>Publicado</strong> para aparecer no site.</p>
+            <a href="/admin/collections/posts" className="tk-guide-link">Ir para Quentinhas →</a>
+          </div>
+          <div className="tk-guide-card">
+            <div className="tk-guide-num">7</div>
+            <h3>🏆 Registre Prêmios</h3>
+            <p>Festivais, seleções e premiações dos filmes. Vincule cada prêmio ao filme correspondente.</p>
+            <a href="/admin/collections/premios" className="tk-guide-link">Ir para Prêmios →</a>
+          </div>
+          <div className="tk-guide-card">
+            <div className="tk-guide-num">8</div>
+            <h3>✉️ Acompanhe Mensagens</h3>
+            <p>Mensagens enviadas pelo formulário "Vamos Juntos" chegam aqui. Cidade/estado por IP.</p>
+            <a href="/admin/collections/form-submissions" className="tk-guide-link">Ir para Mensagens →</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section className="tk-section">
+        <h2 className="tk-section-title">Perguntas Frequentes</h2>
+        <div className="tk-faq-list">
+          <details className="tk-faq-item">
+            <summary>Como meu post aparece no site?</summary>
+            <p>Após criar uma Quentinha, mude o campo <strong>Status</strong> (na barra lateral direita) de "Rascunho" para "Publicado" e clique em Salvar. O post aparece imediatamente em /quentinhas.</p>
+          </details>
+          <details className="tk-faq-item">
+            <summary>Posso ter mais de uma edição "Ativa" ao mesmo tempo?</summary>
+            <p>Não. Apenas uma edição pode estar ativa. Quando você marca uma como ativa, as outras viram automaticamente "Arquivada" e passam a aparecer na Timeline.</p>
+          </details>
+          <details className="tk-faq-item">
+            <summary>O que é o campo "Slug"?</summary>
+            <p>É a parte da URL após a barra. Por exemplo: para "Minha Notícia Legal" → /quentinhas/<strong>minha-noticia-legal</strong>. <strong>Deixe em branco</strong> que o sistema gera automaticamente do título.</p>
+          </details>
+          <details className="tk-faq-item">
+            <summary>Por que preciso adicionar "Texto alternativo" nas imagens?</summary>
+            <p>O Alt ajuda pessoas com deficiência visual (leitores de tela) e melhora seu posicionamento no Google. Use frases curtas e descritivas: "Jovens segurando câmera", não "imagem1.jpg".</p>
+          </details>
+          <details className="tk-faq-item">
+            <summary>Como agendar uma Quentinha para publicar no futuro?</summary>
+            <p>Defina a "Data de publicação" para uma data futura e mantenha o Status como "Publicado". O post aparece no site automaticamente quando chega a data.</p>
+          </details>
+          <details className="tk-faq-item">
+            <summary>Onde fica o backup dos meus dados?</summary>
+            <p>Backups automáticos do banco de dados são feitos diariamente (veja a seção "Backups" abaixo). Suas imagens ficam no servidor e também são incluídas no backup.</p>
+          </details>
         </div>
       </section>
 
@@ -612,6 +752,135 @@ export const Dashboard: React.FC = () => {
           flex-shrink: 0;
         }
 
+        /* Onboarding */
+        .tk-onboarding-card {
+          background: linear-gradient(135deg, rgba(211,47,47,0.06), rgba(46,125,50,0.06));
+          border: 1px solid var(--theme-elevation-100);
+          border-radius: 10px;
+          padding: 1.5rem;
+        }
+        .tk-onboarding-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+        .tk-onboarding-title {
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: var(--theme-text);
+          margin-bottom: 0.25rem;
+        }
+        .tk-onboarding-sub { font-size: 0.82rem; opacity: 0.7; }
+        .tk-onboarding-close {
+          background: transparent;
+          border: none;
+          color: var(--theme-text);
+          opacity: 0.4;
+          cursor: pointer;
+          font-size: 1.1rem;
+          padding: 0.25rem 0.5rem;
+        }
+        .tk-onboarding-close:hover { opacity: 0.8; }
+        .tk-onboarding-progress {
+          height: 6px;
+          background: var(--theme-elevation-100);
+          border-radius: 3px;
+          overflow: hidden;
+          margin-bottom: 1.25rem;
+        }
+        .tk-onboarding-progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #D32F2F, #2E7D32);
+          transition: width 0.4s ease;
+        }
+        .tk-onboarding-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .tk-onboarding-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.85rem;
+          padding: 0.65rem 0.85rem;
+          border-radius: 6px;
+          background: var(--theme-elevation-50);
+          border: 1px solid var(--theme-elevation-100);
+        }
+        .tk-onboarding-item.is-done { opacity: 0.55; }
+        .tk-onboarding-check {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: var(--theme-elevation-150);
+          color: var(--theme-text);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.78rem;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+        .tk-onboarding-item.is-done .tk-onboarding-check {
+          background: #2E7D32;
+          color: #fff;
+        }
+        .tk-onboarding-body { display: flex; flex-direction: column; gap: 0.15rem; }
+        .tk-onboarding-link {
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--theme-text);
+          text-decoration: none;
+        }
+        .tk-onboarding-link:hover { color: #D32F2F; }
+        .tk-onboarding-item.is-done .tk-onboarding-link { text-decoration: line-through; }
+        .tk-onboarding-help {
+          font-size: 0.76rem;
+          opacity: 0.6;
+        }
+
+        /* FAQ */
+        .tk-faq-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .tk-faq-item {
+          background: var(--theme-elevation-50);
+          border: 1px solid var(--theme-elevation-100);
+          border-radius: 6px;
+          padding: 0.75rem 1rem;
+        }
+        .tk-faq-item summary {
+          cursor: pointer;
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--theme-text);
+          list-style: none;
+          padding-right: 1.5rem;
+          position: relative;
+        }
+        .tk-faq-item summary::after {
+          content: '▸';
+          position: absolute;
+          right: 0;
+          top: 0;
+          transition: transform 0.2s;
+          opacity: 0.5;
+        }
+        .tk-faq-item[open] summary::after { transform: rotate(90deg); }
+        .tk-faq-item p {
+          font-size: 0.82rem;
+          opacity: 0.75;
+          line-height: 1.6;
+          margin-top: 0.6rem;
+        }
+
         /* Guide */
         .tk-guide-grid {
           display: grid;
@@ -648,9 +917,17 @@ export const Dashboard: React.FC = () => {
         }
         .tk-guide-card p {
           font-size: 0.78rem;
-          opacity: 0.6;
+          opacity: 0.7;
           line-height: 1.55;
+          margin-bottom: 0.6rem;
         }
+        .tk-guide-link {
+          font-size: 0.75rem;
+          color: #D32F2F;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        .tk-guide-link:hover { text-decoration: underline; }
 
         /* Appearance */
         .tk-appearance-card {

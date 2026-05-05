@@ -7,6 +7,8 @@ export const Edicoes: CollectionConfig = {
     useAsTitle: 'titulo',
     defaultColumns: ['titulo', 'ano', 'status'],
     group: 'Conteúdo',
+    description:
+      '🗓️ Cada temporada do projeto é uma "Edição". Apenas UMA edição pode estar Ativa por vez (mostrada em "Nesta Edição"). As demais ficam em "Arquivada" e aparecem na Timeline.',
   },
   access: {
     read: () => true,
@@ -44,15 +46,19 @@ export const Edicoes: CollectionConfig = {
       label: 'Título',
       type: 'text',
       required: true,
+      admin: {
+        description: 'Nome da edição/temporada. Ex: "Trakinagem Cine 2026 — Belo Horizonte".',
+      },
     },
     {
       name: 'slug',
-      label: 'Slug',
+      label: 'URL amigável (slug)',
       type: 'text',
       required: true,
       unique: true,
       admin: {
         position: 'sidebar',
+        description: 'Será gerado automaticamente. Aparece em /timeline/[slug].',
       },
       hooks: {
         beforeValidate: [
@@ -77,6 +83,7 @@ export const Edicoes: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
+        description: 'Ano de realização da edição.',
       },
     },
     {
@@ -86,19 +93,23 @@ export const Edicoes: CollectionConfig = {
       required: true,
       defaultValue: 'ativa',
       options: [
-        { label: 'Ativa', value: 'ativa' },
-        { label: 'Arquivada', value: 'arquivada' },
+        { label: '🟢 Ativa (exibida em "Nesta Edição")', value: 'ativa' },
+        { label: '📦 Arquivada (aparece na Timeline)', value: 'arquivada' },
       ],
       admin: {
         position: 'sidebar',
-        description: 'Ativa = exibida em "Nesta Edição". Arquivada = aparece na Timeline.',
+        description:
+          'Ao marcar uma edição como Ativa, as outras ativas serão automaticamente arquivadas.',
       },
     },
     {
       name: 'resumo',
-      label: 'Resumo',
+      label: 'Resumo / Descrição',
       type: 'richText',
       required: true,
+      admin: {
+        description: 'Texto que descreve a edição. Aparece nas páginas "Nesta Edição" e Timeline.',
+      },
     },
     {
       name: 'imagemCapa',
@@ -106,11 +117,17 @@ export const Edicoes: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       required: true,
+      admin: {
+        description: 'Imagem em destaque da edição (recomendado: 1200×630px ou maior).',
+      },
     },
     {
       name: 'fotos',
       label: 'Galeria de fotos',
       type: 'array',
+      admin: {
+        description: 'Fotos dos bastidores, oficinas, eventos da edição. Aparecem em galeria.',
+      },
       fields: [
         {
           name: 'foto',
@@ -125,12 +142,18 @@ export const Edicoes: CollectionConfig = {
       name: 'videoLinks',
       label: 'Vídeos (YouTube)',
       type: 'array',
+      admin: {
+        description: 'Vídeos relacionados à edição: trailers, making-of, eventos.',
+      },
       fields: [
         {
           name: 'url',
           label: 'URL do YouTube',
           type: 'text',
           required: true,
+          admin: {
+            description: 'Cole o link completo do YouTube (ex: https://youtu.be/ABC123).',
+          },
         },
       ],
     },
@@ -138,6 +161,9 @@ export const Edicoes: CollectionConfig = {
       name: 'parceirosInstitucionais',
       label: 'Parceiros institucionais',
       type: 'array',
+      admin: {
+        description: 'Instituições parceiras citadas (sem logo). Para apoiadores com logo, use o campo abaixo.',
+      },
       fields: [
         {
           name: 'nome',
@@ -153,6 +179,10 @@ export const Edicoes: CollectionConfig = {
       type: 'relationship',
       relationTo: 'apoiadores',
       hasMany: true,
+      admin: {
+        description:
+          'Selecione os apoiadores desta edição. Para criar um novo, vá em "Apoiadores" no menu.',
+      },
     },
     {
       name: 'isMock',

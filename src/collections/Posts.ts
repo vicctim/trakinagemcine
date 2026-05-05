@@ -7,7 +7,8 @@ export const Posts: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt'],
     group: 'Conteúdo',
-    description: 'Notícias, bastidores e novidades do Trakinagem Cine. Depois de criar, mude o Status para "Publicado" para aparecer no site.',
+    description:
+      '📰 Notícias, bastidores e novidades do projeto. Para aparecer no site, mude o Status para "Publicado".',
   },
   access: {
     read: () => true,
@@ -18,15 +19,20 @@ export const Posts: CollectionConfig = {
       label: 'Título',
       type: 'text',
       required: true,
+      admin: {
+        description: 'Título principal da notícia (aparece em listagens, no topo da página e no Google).',
+      },
     },
     {
       name: 'slug',
-      label: 'Slug',
+      label: 'URL amigável (slug)',
       type: 'text',
       required: true,
       unique: true,
       admin: {
         position: 'sidebar',
+        description:
+          'Endereço da página. Deixe em branco — será gerado automaticamente a partir do título. Ex: "minha-noticia" gera /quentinhas/minha-noticia',
       },
       hooks: {
         beforeValidate: [
@@ -49,6 +55,9 @@ export const Posts: CollectionConfig = {
       label: 'Conteúdo',
       type: 'richText',
       required: true,
+      admin: {
+        description: 'Texto completo da notícia. Use cabeçalhos, negrito, listas e imagens para deixar mais legível.',
+      },
     },
     {
       name: 'coverImage',
@@ -56,11 +65,18 @@ export const Posts: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       required: true,
+      admin: {
+        description:
+          'Imagem principal da notícia (recomendado: 1200×630px). Aparece em listagens, no topo do post e ao compartilhar nas redes sociais.',
+      },
     },
     {
       name: 'pressImages',
-      label: 'Imagens para imprensa',
+      label: 'Imagens para imprensa (opcional)',
       type: 'array',
+      admin: {
+        description: 'Imagens adicionais em alta resolução para download por jornalistas/imprensa.',
+      },
       fields: [
         {
           name: 'image',
@@ -73,8 +89,11 @@ export const Posts: CollectionConfig = {
     },
     {
       name: 'tags',
-      label: 'Tags',
+      label: 'Tags (palavras-chave)',
       type: 'array',
+      admin: {
+        description: 'Palavras-chave para categorizar a notícia. Ex: "edição 2026", "premiação", "bastidores".',
+      },
       fields: [
         {
           name: 'tag',
@@ -90,6 +109,7 @@ export const Posts: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
+        description: 'Data exibida no site. Pode ser futura para agendar.',
         date: {
           pickerAppearance: 'dayOnly',
           displayFormat: 'dd/MM/yyyy',
@@ -103,11 +123,12 @@ export const Posts: CollectionConfig = {
       required: true,
       defaultValue: 'draft',
       options: [
-        { label: 'Rascunho', value: 'draft' },
-        { label: 'Publicado', value: 'published' },
+        { label: '📝 Rascunho (não aparece no site)', value: 'draft' },
+        { label: '✅ Publicado (visível no site)', value: 'published' },
       ],
       admin: {
         position: 'sidebar',
+        description: 'Mude para "Publicado" quando estiver pronto para o conteúdo aparecer no site.',
       },
     },
     {
