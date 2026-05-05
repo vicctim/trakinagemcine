@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { seoFields } from '../fields/seo'
 
 export const Edicoes: CollectionConfig = {
   slug: 'edicoes',
@@ -190,6 +191,7 @@ export const Edicoes: CollectionConfig = {
       defaultValue: false,
       admin: { hidden: true },
     },
+    ...seoFields,
     // Preparação Fase 2 (Multi-Tenant)
     // { name: 'tenantId', type: 'text', admin: { hidden: true } },
   ],

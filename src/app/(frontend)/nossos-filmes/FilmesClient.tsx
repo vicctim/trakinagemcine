@@ -162,16 +162,23 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
                 {selectedFilm.sinopse && (
                   <p className="film-modal__sinopse">{selectedFilm.sinopse}</p>
                 )}
-                {selectedFilm.youtubeUrl && (
-                  <a
-                    href={selectedFilm.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="film-modal__yt-link"
-                  >
-                    Assistir no YouTube →
-                  </a>
-                )}
+                <div className="film-modal__actions">
+                  {selectedFilm.slug && (
+                    <a href={`/nossos-filmes/${selectedFilm.slug}`} className="film-modal__page-link">
+                      Página completa →
+                    </a>
+                  )}
+                  {selectedFilm.youtubeUrl && (
+                    <a
+                      href={selectedFilm.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="film-modal__yt-link"
+                    >
+                      Assistir no YouTube ↗
+                    </a>
+                  )}
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -369,17 +376,31 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
           margin-bottom: 1.5rem;
         }
 
+        .film-modal__actions {
+          display: flex;
+          gap: 1.25rem;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .film-modal__page-link,
         .film-modal__yt-link {
           color: var(--color-accent);
           text-decoration: none;
-          font-weight: 500;
+          font-weight: 600;
           font-size: 0.9rem;
           transition: opacity 0.2s;
         }
 
-        .film-modal__yt-link:hover {
-          opacity: 0.8;
+        .film-modal__page-link {
+          background: var(--color-accent);
+          color: #fff;
+          padding: 0.55rem 1.1rem;
+          border-radius: 6px;
         }
+
+        .film-modal__page-link:hover { opacity: 0.9; }
+        .film-modal__yt-link:hover { opacity: 0.8; }
 
         .empty-state {
           text-align: center;

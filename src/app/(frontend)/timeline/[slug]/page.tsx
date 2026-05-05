@@ -7,14 +7,14 @@ import { Calendar } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import {
+  buildMetadata,
+  eventSchema as buildEventSchema,
+  getMediaUrl,
+  extractTextFromLexical,
+} from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
-
-function getMediaUrl(media: any): string {
-  if (!media) return ''
-  if (typeof media === 'string') return media
-  return media?.url || ''
-}
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -22,7 +22,6 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'
   const payload = await getPayloadClient()
   const { docs } = await payload
     .find({ collection: 'edicoes', where: { slug: { equals: slug } }, limit: 1, depth: 1 })
@@ -31,20 +30,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const edicao = docs[0]
   if (!edicao) return { title: 'Edição não encontrada' }
 
-  const capaUrl = getMediaUrl(edicao.imagemCapa)
-
-  return {
-    title: `${edicao.titulo} — Timeline`,
-    description: `Conheça a ${edicao.titulo} do Trakinagem Cine, edição de ${edicao.ano}.`,
-    alternates: {
-      canonical: `${BASE}/timeline/${slug}`,
-    },
-    openGraph: {
-      title: edicao.titulo,
-      description: `Edição ${edicao.ano} do Trakinagem Cine`,
-      ...(capaUrl ? { images: [{ url: capaUrl, width: 1200, height: 630, alt: edicao.titulo }] } : {}),
-    },
-  }
+  return buildMetadata({
+    seo: edicao.seo,
+    fallbackTitle: `${edicao.titulo} — Timeline`,
+    fallbackDescription:
+      edicao.resumo || `Conheça a ${edicao.titulo} do Trakinagem Cine, edição de ${edicao.ano}.`,
+    fallbackImage: edicao.imagemCapa,
+    path: `/timeline/${slug}`,
+    ogType: 'article',
+  })
 }
 
 export default async function EdicaoSlugPage({ params }: Props) {
@@ -68,22 +62,15 @@ export default async function EdicaoSlugPage({ params }: Props) {
   const videos: any[] = edicao.videoLinks || []
   const parceiros: any[] = edicao.parceirosInstitucionais || []
 
-  const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'
-
-  const eventSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: edicao.titulo,
-    description: typeof edicao.resumo === 'string' ? edicao.resumo.slice(0, 300) : `Edição ${edicao.ano} do Trakinagem Cine`,
-    startDate: String(edicao.ano),
-    organizer: {
-      '@type': 'Organization',
-      name: 'Trakinagem Cine',
-      url: BASE,
-    },
-    url: `${BASE}/timeline/${slug}`,
-    ...(capaUrl ? { image: capaUrl } : {}),
-  }
+  const eventSchema = buildEventSchema({
+    title: edicao.titulo,
+    description:
+      extractTextFromLexical(edicao.resumo).slice(0, 300) ||
+      `Edição ${edicao.ano} do Trakinagem Cine`,
+    image: capaUrl,
+    year: edicao.ano,
+    url: `/timeline/${slug}`,
+  })
 
   return (
     <main className="page-edicao-detalhe">

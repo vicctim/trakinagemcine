@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { seoFields } from '../fields/seo'
 
 export const Filmes: CollectionConfig = {
   slug: 'filmes',
@@ -124,6 +125,7 @@ export const Filmes: CollectionConfig = {
       defaultValue: false,
       admin: { hidden: true },
     },
+    ...seoFields,
     // Preparação Fase 2 (Multi-Tenant)
     // { name: 'tenantId', type: 'text', admin: { hidden: true } },
   ],

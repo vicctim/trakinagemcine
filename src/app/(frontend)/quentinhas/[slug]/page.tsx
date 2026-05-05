@@ -4,14 +4,9 @@ import { getPayloadClient } from '@/lib/payload'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { buildMetadata, articleSchema, getMediaUrl, extractTextFromLexical } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
-
-function getMediaUrl(media: any): string {
-  if (!media) return ''
-  if (typeof media === 'string') return media
-  return media?.url || ''
-}
 
 function formatDate(dateStr: string) {
   try {
@@ -44,15 +39,14 @@ export async function generateMetadata({
   const post = docs[0]
   if (!post) return { title: 'Post não encontrado — Trakinagem Cine' }
 
-  return {
-    title: `${post.title} — Trakinagem Cine`,
-    description:
-      typeof post.content === 'string' ? post.content.slice(0, 160) : 'Quentinha do Trakinagem Cine',
-    openGraph: {
-      title: post.title,
-      images: getMediaUrl(post.coverImage) ? [getMediaUrl(post.coverImage)] : [],
-    },
-  }
+  return buildMetadata({
+    seo: post.seo,
+    fallbackTitle: post.title,
+    fallbackDescription: post.content,
+    fallbackImage: post.coverImage,
+    path: `/quentinhas/${slug}`,
+    ogType: 'article',
+  })
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -70,8 +64,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const coverUrl = getMediaUrl(post.coverImage)
 
+  const ldJson = articleSchema({
+    title: post.title,
+    description: extractTextFromLexical(post.content).slice(0, 200),
+    image: coverUrl,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
+    url: `/quentinhas/${slug}`,
+  })
+
   return (
     <main className="page-post">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+      />
       <article>
         <header className="post-header">
           <div className="container container--narrow">
