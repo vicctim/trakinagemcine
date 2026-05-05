@@ -31,7 +31,9 @@
       "Bash(python3)",
       "Bash(npx tsc *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(chmod +x scripts/backup.sh scripts/restore.sh)",
+      "Bash(git rm *)"
     ]
   }
 }

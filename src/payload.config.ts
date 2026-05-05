@@ -20,6 +20,7 @@ import { FormSubmissions } from './collections/FormSubmissions'
 import { SiteConfig } from './globals/SiteConfig'
 import { SmtpConfig } from './globals/SmtpConfig'
 import { AnalyticsConfig } from './globals/AnalyticsConfig'
+import { BackupConfig } from './globals/BackupConfig'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -68,6 +69,7 @@ export default buildConfig({
     SiteConfig,
     SmtpConfig,
     AnalyticsConfig,
+    BackupConfig,
   ],
 
   // ─── Internationalization (pt-BR) ───────────────────────────────────────

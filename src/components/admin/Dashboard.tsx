@@ -120,6 +120,16 @@ export const Dashboard: React.FC = () => {
   const [mockMsg, setMockMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
   const [checks, setChecks] = useState<OnboardingChecks | null>(null)
   const [showOnboarding, setShowOnboarding] = useState(true)
+  const [backup, setBackup] = useState<{
+    lastAt?: string
+    status?: string
+    message?: string
+    size?: number
+    enabled?: boolean
+  } | null>(null)
+  const [backupRunning, setBackupRunning] = useState(false)
+  const [backupMsg, setBackupMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  const [showSetup, setShowSetup] = useState(false)
 
   const toggleTheme = useCallback(async () => {
     const next = theme === 'default' ? 'editorial' : 'default'
@@ -156,6 +166,24 @@ export const Dashboard: React.FC = () => {
       setMockMsg({ type: 'err', text: 'Erro de conexão.' })
     } finally {
       setMockLoading(false)
+    }
+  }, [])
+
+  const handleBackupNow = useCallback(async () => {
+    setBackupRunning(true)
+    setBackupMsg(null)
+    try {
+      const r = await fetch('/api/admin/backup', { method: 'POST' })
+      const d = await r.json()
+      if (r.ok) {
+        setBackupMsg({ type: 'ok', text: d.message || 'Backup iniciado.' })
+      } else {
+        setBackupMsg({ type: 'err', text: d.error || 'Erro ao iniciar backup.' })
+      }
+    } catch {
+      setBackupMsg({ type: 'err', text: 'Erro de conexão.' })
+    } finally {
+      setBackupRunning(false)
     }
   }, [])
 
@@ -244,6 +272,19 @@ export const Dashboard: React.FC = () => {
       if (r?.ok) {
         const d = await r.json().catch(() => ({}))
         setMsgs(d.docs ?? [])
+      }
+
+      // Fetch backup config + last status
+      const bkRes = await fetch('/api/globals/backup-config?depth=0', { headers }).catch(() => null)
+      if (bkRes?.ok) {
+        const bk = await bkRes.json().catch(() => ({}))
+        setBackup({
+          lastAt: bk?.lastBackupAt,
+          status: bk?.lastBackupStatus,
+          message: bk?.lastBackupMessage,
+          size: bk?.lastBackupSize,
+          enabled: bk?.driveEnabled,
+        })
       }
 
       setLoading(false)
@@ -376,6 +417,140 @@ export const Dashboard: React.FC = () => {
           >
             {themeLoading ? 'Alterando...' : theme === 'editorial' ? '↩ Voltar ao Padrão' : '🎬 Ativar Editorial'}
           </button>
+        </div>
+      </section>
+
+      {/* ─── Backup ─── */}
+      <section className="tk-section">
+        <div className="tk-section-row">
+          <h2 className="tk-section-title">🛡️ Backups e Disaster Recovery</h2>
+          <a href="/admin/globals/backup-config" className="tk-section-link">Configurar →</a>
+        </div>
+        <div className="tk-backup-card">
+          <div className="tk-backup-status">
+            <div className="tk-backup-status-row">
+              <span className="tk-backup-label">Último backup:</span>
+              {backup?.lastAt ? (
+                <span className="tk-backup-time">
+                  <span className={`tk-backup-badge tk-backup-badge--${backup.status || 'unknown'}`}>
+                    {backup.status === 'success' ? '✅' : backup.status === 'error' ? '❌' : backup.status === 'running' ? '⏳' : '❓'}
+                  </span>
+                  {new Date(backup.lastAt).toLocaleString('pt-BR')}
+                  {backup.size ? ` · ${(backup.size / 1024 / 1024).toFixed(1)} MB` : ''}
+                </span>
+              ) : (
+                <span className="tk-backup-time tk-backup-empty">Nenhum backup registrado ainda.</span>
+              )}
+            </div>
+            {backup?.message && backup.status === 'error' && (
+              <p className="tk-backup-error">{backup.message}</p>
+            )}
+            <div className="tk-backup-status-row">
+              <span className="tk-backup-label">Google Drive:</span>
+              <span className="tk-backup-time">
+                {backup?.enabled ? '✅ Ativo (envio automático)' : '⚪ Desativado (apenas local)'}
+              </span>
+            </div>
+          </div>
+          <div className="tk-backup-actions">
+            <button className="tk-backup-btn tk-backup-btn--primary" onClick={handleBackupNow} disabled={backupRunning}>
+              {backupRunning ? 'Iniciando...' : '▶ Fazer Backup Agora'}
+            </button>
+            <button className="tk-backup-btn" onClick={() => setShowSetup(!showSetup)}>
+              {showSetup ? '↑ Ocultar setup' : '📋 Comandos de Setup'}
+            </button>
+            <a href="/admin/globals/backup-config" className="tk-backup-btn">⚙️ Configurações</a>
+          </div>
+          {backupMsg && (
+            <div className={`tk-backup-feedback tk-backup-feedback--${backupMsg.type}`}>
+              {backupMsg.text}
+            </div>
+          )}
+
+          {showSetup && (
+            <div className="tk-backup-setup">
+              <h4>🔧 Setup inicial — execute na VPS uma única vez</h4>
+              <p>Estes comandos preparam o sistema para fazer backups automáticos. Execute como o usuário dono do projeto.</p>
+
+              <details className="tk-setup-step" open>
+                <summary><strong>Passo 1.</strong> Instalar dependências (rclone + jq)</summary>
+                <pre className="tk-setup-code">{`sudo apt-get update && sudo apt-get install -y rclone jq curl`}</pre>
+              </details>
+
+              <details className="tk-setup-step">
+                <summary><strong>Passo 2.</strong> Configurar Google Drive (rclone)</summary>
+                <p>Inicie o assistente do rclone, escolha "Google Drive" e siga o link OAuth para autorizar:</p>
+                <pre className="tk-setup-code">{`rclone config
+
+# No assistente:
+# n) New remote
+# name> gdrive-trakinagem
+# Storage> drive  (Google Drive)
+# client_id> (deixe vazio - usa o padrão)
+# client_secret> (deixe vazio)
+# scope> 1  (Full access)
+# service_account_file> (deixe vazio)
+# Edit advanced config? n
+# Use auto config? y  (cole o link no navegador, autorize, copie o token)
+# Configure as Shared Drive? n
+# y) Yes this is OK
+# q) Quit config
+
+# Teste:
+rclone lsd gdrive-trakinagem:`}</pre>
+              </details>
+
+              <details className="tk-setup-step">
+                <summary><strong>Passo 3.</strong> Tornar scripts executáveis</summary>
+                <pre className="tk-setup-code">{`chmod +x /srv/clientes/victor/trakinagemcine/scripts/backup.sh
+chmod +x /srv/clientes/victor/trakinagemcine/scripts/restore.sh`}</pre>
+              </details>
+
+              <details className="tk-setup-step">
+                <summary><strong>Passo 4.</strong> Testar backup manualmente</summary>
+                <pre className="tk-setup-code">{`/bin/bash /srv/clientes/victor/trakinagemcine/scripts/backup.sh
+
+# Você verá os logs em tempo real. Em caso de sucesso, o último
+# status aparece neste painel ao recarregar.`}</pre>
+              </details>
+
+              <details className="tk-setup-step">
+                <summary><strong>Passo 5.</strong> Agendar backup diário no cron (3h AM)</summary>
+                <pre className="tk-setup-code">{`# Edite o crontab do usuário:
+crontab -e
+
+# Adicione esta linha (ajuste o horário se quiser):
+0 3 * * * /bin/bash /srv/clientes/victor/trakinagemcine/scripts/backup.sh >> /srv/clientes/victor/trakinagemcine/backups/cron.log 2>&1
+
+# Salve e feche. Verifique se foi adicionado:
+crontab -l`}</pre>
+              </details>
+
+              <details className="tk-setup-step">
+                <summary><strong>Restaurar de um backup (em catástrofe)</strong></summary>
+                <p>Em caso de catástrofe (VPS apagada), siga este procedimento:</p>
+                <pre className="tk-setup-code">{`# 1. Clone o repositório novamente:
+git clone <repo-url> /srv/clientes/victor/trakinagemcine
+cd /srv/clientes/victor/trakinagemcine
+
+# 2. Baixar último backup do Drive (se rclone configurado):
+rclone copy gdrive-trakinagem:backups/trakinagemcine/daily ./backups/daily
+
+# 3. Subir os containers:
+cp .env.example .env  # ajuste credenciais
+docker compose up -d --build
+
+# 4. Restaurar (substitua pelo nome do bundle real):
+/bin/bash scripts/restore.sh ./backups/daily/trakinagemcine_YYYYMMDD_HHMMSS.tar
+
+# 5. Verificar:
+curl http://localhost:3006/api/posts?limit=1`}</pre>
+                <p style={{ marginTop: '0.75rem', fontSize: '0.78rem' }}>
+                  📄 Documentação completa: <code>DISASTER_RECOVERY.md</code> na raiz do projeto.
+                </p>
+              </details>
+            </div>
+          )}
         </div>
       </section>
 
@@ -969,6 +1144,139 @@ export const Dashboard: React.FC = () => {
         }
         .tk-theme-btn:hover:not(:disabled) { background: #B71C1C; }
         .tk-theme-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Backup */
+        .tk-backup-card {
+          padding: 1.25rem 1.5rem;
+          background: var(--theme-elevation-50);
+          border: 1px solid var(--theme-elevation-100);
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .tk-backup-status {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+        .tk-backup-status-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.85rem;
+          flex-wrap: wrap;
+        }
+        .tk-backup-label { opacity: 0.6; }
+        .tk-backup-time { font-weight: 500; }
+        .tk-backup-empty { font-style: italic; opacity: 0.6; font-weight: 400; }
+        .tk-backup-error {
+          padding: 0.5rem 0.75rem;
+          background: rgba(211,47,47,0.1);
+          color: #D32F2F;
+          border-radius: 4px;
+          font-size: 0.8rem;
+        }
+        .tk-backup-badge {
+          display: inline-block;
+          margin-right: 0.25rem;
+        }
+        .tk-backup-actions {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .tk-backup-btn {
+          padding: 0.55rem 1.1rem;
+          border: 1px solid var(--theme-elevation-150);
+          background: transparent;
+          color: var(--theme-text);
+          border-radius: 6px;
+          font-size: 0.82rem;
+          font-weight: 500;
+          cursor: pointer;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .tk-backup-btn:hover:not(:disabled) {
+          border-color: #D32F2F;
+          color: #D32F2F;
+        }
+        .tk-backup-btn--primary {
+          background: #D32F2F;
+          border-color: #D32F2F;
+          color: #fff;
+        }
+        .tk-backup-btn--primary:hover:not(:disabled) {
+          background: #B71C1C;
+          color: #fff;
+        }
+        .tk-backup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tk-backup-feedback {
+          padding: 0.6rem 1rem;
+          border-radius: 6px;
+          font-size: 0.82rem;
+          font-weight: 500;
+        }
+        .tk-backup-feedback--ok { background: rgba(46,125,50,0.12); color: #2E7D32; }
+        .tk-backup-feedback--err { background: rgba(211,47,47,0.1); color: #D32F2F; }
+        .tk-backup-setup {
+          background: var(--theme-elevation-100);
+          border-radius: 6px;
+          padding: 1rem 1.25rem;
+          margin-top: 0.5rem;
+        }
+        .tk-backup-setup h4 {
+          font-size: 0.95rem;
+          margin-bottom: 0.5rem;
+          color: var(--theme-text);
+        }
+        .tk-backup-setup > p {
+          font-size: 0.82rem;
+          opacity: 0.7;
+          margin-bottom: 0.85rem;
+        }
+        .tk-setup-step {
+          background: var(--theme-elevation-50);
+          border-radius: 5px;
+          padding: 0.65rem 0.85rem;
+          margin-bottom: 0.5rem;
+          border: 1px solid var(--theme-elevation-150);
+        }
+        .tk-setup-step summary {
+          cursor: pointer;
+          font-size: 0.85rem;
+          padding-right: 1.5rem;
+          position: relative;
+          list-style: none;
+        }
+        .tk-setup-step summary::after {
+          content: '▸';
+          position: absolute;
+          right: 0;
+          top: 0;
+          opacity: 0.5;
+          transition: transform 0.2s;
+        }
+        .tk-setup-step[open] summary::after { transform: rotate(90deg); }
+        .tk-setup-step p {
+          font-size: 0.78rem;
+          opacity: 0.75;
+          margin-top: 0.5rem;
+          line-height: 1.55;
+        }
+        .tk-setup-code {
+          background: #1a1a1a;
+          color: #b3e8a4;
+          padding: 0.75rem 1rem;
+          border-radius: 4px;
+          font-family: 'SF Mono', Menlo, Consolas, monospace;
+          font-size: 0.75rem;
+          line-height: 1.6;
+          overflow-x: auto;
+          white-space: pre;
+          margin-top: 0.5rem;
+        }
 
         /* Mock Data */
         .tk-mock-card {
