@@ -130,16 +130,20 @@ fi
 prune() {
   local dir="$1"
   local keep="$2"
-  cd "$dir"
-  ls -t trakinagemcine_*.tar 2>/dev/null | tail -n +$((keep + 1)) | while read -r f; do
-    rm -f "$f"
+  # Lista bundles ordenados do mais novo pro mais velho. shopt nullglob evita
+  # erro quando não há matches; `|| true` evita morrer com pipefail vazio.
+  local files
+  files=$(cd "$dir" && shopt -s nullglob && ls -t trakinagemcine_*.tar 2>/dev/null || true)
+  [ -z "$files" ] && return 0
+  echo "$files" | tail -n +$((keep + 1)) | while read -r f; do
+    [ -z "$f" ] && continue
+    rm -f "${dir}/$f"
     log "🗑️  Removido: ${dir}/$f"
   done
-  cd - >/dev/null
 }
-prune "$DAILY_DIR" "$RETENTION_DAILY"
-prune "$WEEKLY_DIR" "$RETENTION_WEEKLY"
-prune "$MONTHLY_DIR" "$RETENTION_MONTHLY"
+prune "$DAILY_DIR" "$RETENTION_DAILY" || true
+prune "$WEEKLY_DIR" "$RETENTION_WEEKLY" || true
+prune "$MONTHLY_DIR" "$RETENTION_MONTHLY" || true
 
 # ─── 6. Upload para Google Drive (rclone) ───────────────────
 if [ "$DRIVE_ENABLED" = "true" ]; then
