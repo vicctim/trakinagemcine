@@ -47,8 +47,8 @@ log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
 }
 
-# ─── Buscar config do painel admin ──────────────────────────
-# Padrões caso a API não responda
+# ─── Buscar config do painel admin (lê direto do Postgres) ──
+# Padrões caso o DB não responda
 RETENTION_DAILY=7
 RETENTION_WEEKLY=4
 RETENTION_MONTHLY=6
@@ -56,16 +56,20 @@ DRIVE_ENABLED="false"
 DRIVE_REMOTE="gdrive-trakinagem"
 DRIVE_FOLDER="backups/trakinagemcine"
 
-if command -v curl >/dev/null && command -v jq >/dev/null; then
-  CFG_JSON=$(curl -sf "${SITE_API}/api/globals/backup-config?depth=0" 2>/dev/null || echo '{}')
-  if [ -n "$CFG_JSON" ] && [ "$CFG_JSON" != "{}" ]; then
-    RETENTION_DAILY=$(echo "$CFG_JSON" | jq -r '.retentionDaily // 7')
-    RETENTION_WEEKLY=$(echo "$CFG_JSON" | jq -r '.retentionWeekly // 4')
-    RETENTION_MONTHLY=$(echo "$CFG_JSON" | jq -r '.retentionMonthly // 6')
-    DRIVE_ENABLED=$(echo "$CFG_JSON" | jq -r '.driveEnabled // false')
-    DRIVE_REMOTE=$(echo "$CFG_JSON" | jq -r '.driveRemoteName // "gdrive-trakinagem"')
-    DRIVE_FOLDER=$(echo "$CFG_JSON" | jq -r '.driveFolder // "backups/trakinagemcine"')
-    log "📋 Config carregada do admin: retention=${RETENTION_DAILY}/${RETENTION_WEEKLY}/${RETENTION_MONTHLY} drive=${DRIVE_ENABLED}"
+if docker exec "$DB_CONTAINER" pg_isready -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1; then
+  CFG=$(docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" -t -A -F'|' \
+    -c "SELECT retention_daily, retention_weekly, retention_monthly, drive_enabled, drive_remote_name, drive_folder FROM backup_config LIMIT 1;" 2>/dev/null || echo "")
+  if [ -n "$CFG" ]; then
+    IFS='|' read -r RETENTION_DAILY RETENTION_WEEKLY RETENTION_MONTHLY DRIVE_ENABLED_RAW DRIVE_REMOTE DRIVE_FOLDER <<< "$CFG"
+    # Postgres bool vem como 't' ou 'f'
+    [ "$DRIVE_ENABLED_RAW" = "t" ] && DRIVE_ENABLED="true" || DRIVE_ENABLED="false"
+    # Padrões pra valores vazios
+    RETENTION_DAILY=${RETENTION_DAILY:-7}
+    RETENTION_WEEKLY=${RETENTION_WEEKLY:-4}
+    RETENTION_MONTHLY=${RETENTION_MONTHLY:-6}
+    DRIVE_REMOTE=${DRIVE_REMOTE:-gdrive-trakinagem}
+    DRIVE_FOLDER=${DRIVE_FOLDER:-backups/trakinagemcine}
+    log "📋 Config: retention=${RETENTION_DAILY}/${RETENTION_WEEKLY}/${RETENTION_MONTHLY} drive=${DRIVE_ENABLED} (${DRIVE_REMOTE}:${DRIVE_FOLDER})"
   fi
 fi
 
