@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     'As referências, redes e iniciativas que inspiram e se conectam com o Trakinagem Cine. Conheça a Rede Kino e outros projetos de cinema educativo.',
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'}/nossas-inspiracoes`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/nossas-inspiracoes`,
   },
 }
 

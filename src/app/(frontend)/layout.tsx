@@ -76,8 +76,8 @@ const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Trakinagem Cine',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br',
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'}/images/logo-trakinagemcine.png`,
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/images/logo-trakinagemcine.png`,
   sameAs: [
     'https://www.facebook.com/trakinagemcine',
     'https://www.instagram.com/trakinagemcine/',

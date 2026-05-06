@@ -14,8 +14,19 @@
 2. **[2026-05-05] Root layout usa try/catch em torno do DB**
    Do instead: `src/app/(frontend)/layout.tsx` já tem try/catch correto — nunca remover; é o único ponto que suporta build sem DB.
 
-3. **[2026-05-05] Testar via `http://trakinagemcine.local` (NPM proxy)**
-   Do instead: usar URL local para verificar visual; produção em `https://trakinagem.victorsamuel.com.br`. Containers: `trakinagemcine` (porta 3006) e `trakinagemcine_db`.
+3. **[2026-05-05] `push: true` ignorado em produção — sempre usar migrations**
+   Do instead: ao adicionar campos/globals novos, gerar migration (`docker compose exec app npx payload migrate:create nome`) e aplicar (`migrate`). Em prod, schema NÃO sincroniza sozinho mesmo com `push: true`.
+
+4. **[2026-05-05] Container roda como uid=1001:65533 (nextjs:nogroup)**
+   Do instead: pra criar migrations dentro do container, dar `chmod -R 777 /app/src/migrations` antes (ou `--user root` no exec). Migration salva precisa ser copiada do container pro host com `docker cp`.
+
+5. **[2026-05-05] Hoje só rodando em Proxmox (192.168.100.101) — VPS ainda não entrou**
+   Do instead: o domínio público `trakinagemcine.victorsamuel.com.br` aponta pro Proxmox via Cloudflare Tunnel. Quando o usuário disser "VPS", confirmar antes — provavelmente ainda é Proxmox. Containers: `trakinagemcine` (porta 3006) e `trakinagemcine_db`.
+
+## Payload 3 Gotchas
+
+1. **[2026-05-05] `collapsible` com label string mostra "Alternar bloco" em pt-BR**
+   Do instead: usar `tabs` ou `group` plano. O i18n pt do Payload trata strings de label do collapsible como chave e cai no fallback aria-label genérico.
 
 ## Stack & Architecture
 

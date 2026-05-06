@@ -42,7 +42,7 @@ export default buildConfig({
 
     // ─── Sidebar Links de Apoio ───────────────────────────────────────────
     livePreview: {
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br',
+      url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       collections: ['posts', 'filmes', 'edicoes'],
     },
   },

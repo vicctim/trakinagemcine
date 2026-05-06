@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Como Filmar? — Trakinagem Cine',
   description: 'A metodologia dos 7 Atos: como os jovens aprendem a fazer cinema no Trakinagem.',
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'}/como-filmar`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/como-filmar`,
   },
 }
 

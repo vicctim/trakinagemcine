@@ -304,7 +304,7 @@ export const Dashboard: React.FC = () => {
           </h1>
           <p className="tk-dash-sub">Painel de Gestão de Conteúdo — Cinema transforma vidas</p>
         </div>
-        <a href="https://trakinagemcine.victorsamuel.com.br" target="_blank" rel="noopener noreferrer" className="tk-dash-site-btn">
+        <a href={process.env.NEXT_PUBLIC_SITE_URL || '/'} target="_blank" rel="noopener noreferrer" className="tk-dash-site-btn">
           Ver site →
         </a>
       </div>

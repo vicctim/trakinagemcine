@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     'Conheça o Trakinagem Cine: projeto que ensina jovens em vulnerabilidade social a fazer cinema.',
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://trakinagemcine.victorsamuel.com.br'}/bora-filmar`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/bora-filmar`,
   },
 }
 
