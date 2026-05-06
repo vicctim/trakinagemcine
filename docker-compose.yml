@@ -8,6 +8,7 @@ services:
     env_file: .env
     environment:
       - NODE_ENV=production
+      - BACKUP_ROOT=/app/backups
     depends_on:
       db:
         condition: service_healthy
@@ -15,6 +16,8 @@ services:
       - media_data:/app/media
       # Bind mount: migrations geradas no container ficam no host (e vão pro git)
       - ./src/migrations:/app/src/migrations
+      # Bind mount: backups locais visíveis pela API admin
+      - ./backups:/app/backups
     networks:
       - trakinagem_network
       - rede_publica

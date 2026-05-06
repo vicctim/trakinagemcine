@@ -3,10 +3,9 @@ import { getPayloadClient } from '@/lib/payload'
 import { headers as nextHeaders } from 'next/headers'
 import fs from 'fs/promises'
 import path from 'path'
-import { spawn } from 'child_process'
 
-const BACKUP_ROOT =
-  process.env.BACKUP_ROOT || '/srv/clientes/victor/trakinagemcine/backups'
+const BACKUP_ROOT = process.env.BACKUP_ROOT || '/app/backups'
+const TRIGGER_FILE = path.join(BACKUP_ROOT, '.backup-requested')
 
 async function requireAuth() {
   const payload = await getPayloadClient()
@@ -54,35 +53,30 @@ export async function GET() {
   }
 }
 
-// ─── POST: dispara backup manual ────────────────────────────────────────────
+// ─── POST: solicita backup manual ───────────────────────────────────────────
+//
+// O backup precisa rodar NO HOST (precisa de docker exec pra acessar o banco
+// e o volume de mídia). Não é executável dentro do container.
+//
+// Solução: criamos um arquivo de trigger em backups/.backup-requested.
+// O script `scripts/trigger-watcher.sh` (em cron de 1 min no host) detecta
+// o arquivo, dispara o backup e remove o trigger.
 export async function POST() {
   try {
     const user = await requireAuth()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const scriptPath = path.resolve(process.cwd(), 'scripts/backup.sh')
-    try {
-      await fs.access(scriptPath)
-    } catch {
-      return NextResponse.json(
-        {
-          error:
-            'Script de backup não encontrado. Configure com o comando do Dashboard antes de fazer backup manual.',
-        },
-        { status: 400 },
-      )
-    }
-
-    // Disparar em background — não esperar terminar (pode levar minutos)
-    const child = spawn('/bin/bash', [scriptPath], {
-      detached: true,
-      stdio: 'ignore',
-    })
-    child.unref()
+    await fs.mkdir(BACKUP_ROOT, { recursive: true })
+    await fs.writeFile(
+      TRIGGER_FILE,
+      JSON.stringify({ requestedAt: new Date().toISOString(), requestedBy: user.email }),
+      'utf-8',
+    )
 
     return NextResponse.json({
       ok: true,
-      message: 'Backup iniciado em background. Verifique o status em alguns segundos.',
+      message:
+        'Backup solicitado. Será iniciado em até 1 minuto se o trigger-watcher estiver no cron. Caso contrário, execute na VPS: bash scripts/backup.sh',
     })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro' }, { status: 500 })

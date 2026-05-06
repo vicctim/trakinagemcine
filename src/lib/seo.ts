@@ -80,8 +80,9 @@ interface SeoInput {
 export function buildMetadata(input: SeoInput): Metadata {
   const { seo, fallbackTitle, fallbackDescription, fallbackImage, path, ogType = 'article' } = input
 
+  // O layout aplica template '%s — Trakinagem Cine' automaticamente,
+  // então NÃO adicionamos o sufixo aqui pra evitar duplicação.
   const title = seo?.metaTitle?.trim() || fallbackTitle
-  const fullTitle = `${title} — ${SITE_NAME}`
 
   const rawDescription =
     seo?.metaDescription?.trim() ||
@@ -94,7 +95,7 @@ export function buildMetadata(input: SeoInput): Metadata {
   const canonical = absoluteUrl(path)
 
   return {
-    title: fullTitle,
+    title,
     description: description || `${title} — ${SITE_NAME}`,
     alternates: { canonical },
     robots: seo?.noIndex

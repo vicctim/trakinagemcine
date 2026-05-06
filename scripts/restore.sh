@@ -60,6 +60,15 @@ fi
 
 # ─── Restore do PostgreSQL ──────────────────────────────────
 echo "🗄️  Restaurando banco de dados..."
+
+# Parar app temporariamente pra liberar conexões
+echo "  ⏸️  Pausando container do app..."
+docker stop "$APP_CONTAINER" >/dev/null 2>&1 || true
+
+# Forçar terminação de sessões remanescentes
+docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d postgres -c \
+  "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='${DB_NAME}' AND pid <> pg_backend_pid();" >/dev/null
+
 docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"
 docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d postgres -c "CREATE DATABASE ${DB_NAME};"
 gunzip -c "$DB_GZ" | docker exec -i "$DB_CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" >/dev/null
@@ -76,9 +85,9 @@ if [ -n "$MEDIA_GZ" ]; then
 fi
 
 # ─── Reiniciar app (forçar recarregar config/conexões) ──────
-echo "🔄 Reiniciando app..."
-docker restart "$APP_CONTAINER" >/dev/null
-echo "  ✅ App reiniciado"
+echo "🔄 Iniciando app..."
+docker start "$APP_CONTAINER" >/dev/null 2>&1 || docker compose -f "${PROJECT_ROOT}/docker-compose.yml" up -d app >/dev/null
+echo "  ✅ App iniciado"
 
 echo ""
 echo "✔ Restore concluído com sucesso."
