@@ -1,6 +1,7 @@
 import React from 'react'
 import { getPayloadClient } from '@/lib/payload'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { EmptyState } from '@/components/ui/EmptyState'
 import Image from 'next/image'
 import { Trophy, Clapperboard } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -104,13 +105,11 @@ export default async function PremiosPage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              <div className="empty-state__icon"><Trophy size={48} strokeWidth={1.2} /></div>
-              <h3 className="empty-state__title">Nenhum prêmio cadastrado</h3>
-              <p className="empty-state__text">
-                Em breve adicionaremos os prêmios e seleções.
-              </p>
-            </div>
+            <EmptyState
+              icon={<Trophy size={48} strokeWidth={1.2} />}
+              title="Nenhum prêmio cadastrado"
+              description="Em breve adicionaremos os prêmios e seleções."
+            />
           )}
         </div>
       </section>
@@ -198,10 +197,6 @@ export default async function PremiosPage() {
           margin-top: 0.35rem;
         }
 
-        .empty-state { text-align: center; padding: 4rem 2rem; }
-        .empty-state__icon { display: flex; justify-content: center; margin-bottom: 1.5rem; opacity: 0.4; }
-        .empty-state__title { font-family: var(--font-heading); margin-bottom: 0.75rem; }
-        .empty-state__text { color: var(--color-text-secondary); max-width: 40ch; margin: 0 auto; }
       `}</style>
     </main>
   )

@@ -406,6 +406,10 @@ input[type="reset"], .cursor-pointer {
   100% { transform: translateX(-50%); }
 }
 
+[data-site-theme="editorial"] .editorial-ticker:hover .editorial-ticker__track {
+  animation-play-state: paused;
+}
+
 /* ─── Hero ────────────────────────────────── */
 [data-site-theme="editorial"] .hero {
   background: var(--ed-paper);
@@ -1823,6 +1827,95 @@ input[type="reset"], .cursor-pointer {
 @media (max-width: 380px) {
   .apoiadores-editorial__left,
   .apoiadores-editorial__right { padding: 1.5rem 1rem; }
+}
+
+/* ─── Visually hidden (screen reader only) ─── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Button (shared component) ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-bg-primary);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(211, 47, 47, 0.3);
+  color: var(--color-bg-primary);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn--secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  padding: 0.5rem 0;
+}
+
+.btn--ghost:hover {
+  color: var(--color-accent);
+}
+
+/* ─── Empty state (shared component) ─── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-state__icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  opacity: 0.4;
+}
+
+.empty-state__title {
+  font-family: var(--font-heading);
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary);
+}
+
+.empty-state__text {
+  color: var(--color-text-secondary);
+  max-width: 40ch;
+  margin: 0 auto;
+  font-size: 0.95rem;
 }
 
 /* ─── Global overflow safety net ─── */

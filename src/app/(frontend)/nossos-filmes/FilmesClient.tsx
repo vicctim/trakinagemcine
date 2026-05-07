@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { YouTubeEmbed } from '@/components/ui/YouTubeEmbed'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clapperboard } from 'lucide-react'
 
@@ -106,13 +107,11 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
               })}
             </div>
           ) : (
-            <div className="empty-state">
-              <div className="empty-state__icon"><Clapperboard size={48} strokeWidth={1.2} /></div>
-              <h3 className="empty-state__title">Nenhum filme encontrado</h3>
-              <p className="empty-state__text">
-                Em breve adicionaremos os filmes ao catálogo.
-              </p>
-            </div>
+            <EmptyState
+              icon={<Clapperboard size={48} strokeWidth={1.2} />}
+              title="Nenhum filme encontrado"
+              description="Em breve adicionaremos os filmes ao catálogo."
+            />
           )}
         </div>
       </section>
@@ -402,14 +401,6 @@ export default function FilmesClient({ filmes, edicoes }: FilmesClientProps) {
         .film-modal__page-link:hover { opacity: 0.9; }
         .film-modal__yt-link:hover { opacity: 0.8; }
 
-        .empty-state {
-          text-align: center;
-          padding: 4rem 2rem;
-        }
-
-        .empty-state__icon { display: flex; justify-content: center; margin-bottom: 1.5rem; opacity: 0.4; }
-        .empty-state__title { font-family: var(--font-heading); margin-bottom: 0.75rem; }
-        .empty-state__text { color: var(--color-text-secondary); max-width: 40ch; margin: 0 auto; }
       `}</style>
     </>
   )

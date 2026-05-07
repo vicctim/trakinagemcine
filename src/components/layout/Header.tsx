@@ -40,9 +40,12 @@ type NavItem =
 function Dropdown({ item, pathname }: { item: NavItem; pathname: string }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const hoverRef = useRef(false)
   const hasChild = Boolean(item.children)
 
   useEffect(() => {
+    hoverRef.current = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
     function handler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
@@ -67,8 +70,8 @@ function Dropdown({ item, pathname }: { item: NavItem; pathname: string }) {
     <div
       ref={ref}
       className="header__dropdown"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => { if (hoverRef.current) setOpen(true) }}
+      onMouseLeave={() => { if (hoverRef.current) setOpen(false) }}
     >
       <button
         className={`header__link header__dropdown-trigger ${isActive ? 'header__link--active' : ''}`}
@@ -129,7 +132,7 @@ function MobileNavItem({
         aria-expanded={open}
       >
         {item.label}
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`mobile-nav__chevron ${open ? 'mobile-nav__chevron--open' : ''}`}>
           <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
@@ -659,6 +662,15 @@ export function Header() {
         .mobile-nav__sublink:hover,
         .mobile-nav__link--active {
           color: var(--color-accent);
+        }
+
+        .mobile-nav__chevron {
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .mobile-nav__chevron--open {
+          transform: rotate(180deg);
         }
       `}</style>
     </>

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -30,6 +30,8 @@ export function Card({
   variant = 'default',
   children,
 }: CardProps) {
+  const [imgLoaded, setImgLoaded] = useState(false)
+
   const content = (
     <motion.article
       className={`card card--${variant}`}
@@ -37,12 +39,14 @@ export function Card({
     >
       {imageUrl && (
         <div className="card__image-wrap">
+          {!imgLoaded && <div className="card__image-skeleton" aria-hidden="true" />}
           <Image
             src={imageUrl}
             alt={imageAlt}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="card__image"
+            onLoad={() => setImgLoaded(true)}
           />
           {tag && <span className="card__tag">{tag}</span>}
         </div>
@@ -56,6 +60,12 @@ export function Card({
       </div>
 
       <style>{`
+        .card__link {
+          text-decoration: none;
+          display: block;
+          height: 100%;
+        }
+
         .card {
           background: var(--color-bg-white);
           border: 1px solid var(--color-border);
@@ -76,6 +86,25 @@ export function Card({
           position: relative;
           aspect-ratio: 16 / 10;
           overflow: hidden;
+          background: var(--color-bg-secondary);
+        }
+
+        .card__image-skeleton {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg,
+            var(--color-bg-secondary) 25%,
+            var(--color-bg-tertiary, #e8e6e2) 50%,
+            var(--color-bg-secondary) 75%
+          );
+          background-size: 200% 100%;
+          animation: card-shimmer 1.5s infinite;
+          z-index: 1;
+        }
+
+        @keyframes card-shimmer {
+          0%   { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
         }
 
         .card--film .card__image-wrap {
@@ -149,7 +178,7 @@ export function Card({
 
   if (href) {
     return (
-      <Link href={href} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+      <Link href={href} className="card__link">
         {content}
       </Link>
     )

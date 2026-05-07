@@ -2,6 +2,7 @@ import React from 'react'
 import { getPayloadClient } from '@/lib/payload'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Card } from '@/components/ui/Card'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Newspaper } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -10,6 +11,13 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Quentinhas — Trakinagem Cine',
   description: 'Novidades, bastidores e material de imprensa do projeto Trakinagem Cine.',
+}
+
+function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  const cut = text.slice(0, maxLength)
+  const lastSpace = cut.lastIndexOf(' ')
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + '…'
 }
 
 function formatDate(dateStr: string) {
@@ -65,7 +73,7 @@ export default async function QuentinhasPage() {
                   key={post.id}
                   title={post.title}
                   description={
-                    typeof post.content === 'string' ? post.content.slice(0, 150) + '...' : ''
+                    typeof post.content === 'string' ? truncate(post.content, 150) : ''
                   }
                   imageUrl={getMediaUrl(post.coverImage)}
                   imageAlt={post.coverImage?.alt || post.title}
@@ -76,13 +84,11 @@ export default async function QuentinhasPage() {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              <div className="empty-state__icon"><Newspaper size={48} strokeWidth={1.2} /></div>
-              <h3 className="empty-state__title">Nenhuma quentinha ainda</h3>
-              <p className="empty-state__text">
-                Em breve publicaremos novidades sobre o projeto. Fique ligado!
-              </p>
-            </div>
+            <EmptyState
+              icon={<Newspaper size={48} strokeWidth={1.2} />}
+              title="Nenhuma quentinha ainda"
+              description="Em breve publicaremos novidades sobre o projeto. Fique ligado!"
+            />
           )}
         </div>
       </section>
@@ -110,28 +116,7 @@ export default async function QuentinhasPage() {
           }
         }
 
-        .empty-state {
-          text-align: center;
-          padding: 4rem 2rem;
-        }
 
-        .empty-state__icon {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 1.5rem;
-          opacity: 0.4;
-        }
-
-        .empty-state__title {
-          font-family: var(--font-heading);
-          margin-bottom: 0.75rem;
-        }
-
-        .empty-state__text {
-          color: var(--color-text-secondary);
-          max-width: 40ch;
-          margin: 0 auto;
-        }
       `}</style>
     </main>
   )

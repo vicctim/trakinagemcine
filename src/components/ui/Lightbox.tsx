@@ -18,10 +18,17 @@ interface LightboxProps {
 
 export function Lightbox({ images, initialIndex = 0, isOpen, onClose }: LightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
+  const closeRef = React.useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setCurrentIndex(initialIndex)
   }, [initialIndex])
+
+  useEffect(() => {
+    if (isOpen && closeRef.current) {
+      closeRef.current.focus()
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen) return
@@ -57,13 +64,21 @@ export function Lightbox({ images, initialIndex = 0, isOpen, onClose }: Lightbox
       {isOpen && (
         <motion.div
           className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Galeria de imagens"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
         >
-          <button className="lightbox__close" onClick={onClose} aria-label="Fechar">
+          <span className="lightbox__sr-announce" aria-live="polite" aria-atomic="true">
+            {images[currentIndex]?.alt
+              ? `${images[currentIndex].alt} — ${currentIndex + 1} de ${images.length}`
+              : `Imagem ${currentIndex + 1} de ${images.length}`}
+          </span>
+          <button ref={closeRef} className="lightbox__close" onClick={onClose} aria-label="Fechar galeria">
             ✕
           </button>
 
@@ -194,6 +209,18 @@ export function Lightbox({ images, initialIndex = 0, isOpen, onClose }: Lightbox
               color: var(--color-text-muted);
               font-size: 0.85rem;
               letter-spacing: 0.1em;
+            }
+
+            .lightbox__sr-announce {
+              position: absolute;
+              width: 1px;
+              height: 1px;
+              padding: 0;
+              margin: -1px;
+              overflow: hidden;
+              clip: rect(0,0,0,0);
+              white-space: nowrap;
+              border: 0;
             }
           `}</style>
         </motion.div>

@@ -130,6 +130,13 @@ export default function VamosJuntosPage() {
   const [error, setError] = useState<string | null>(null)
   const [phone, setPhone] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
+  const errorRef = useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.focus()
+    }
+  }, [error])
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPhone(formatPhone(e.target.value))
@@ -240,7 +247,11 @@ export default function VamosJuntosPage() {
                 <CinemaLoader />
               ) : (
                 <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate>
-                  {error && <div className="form-error" role="alert">{error}</div>}
+                  {error && (
+                    <div className="form-error" role="alert" ref={errorRef} tabIndex={-1}>
+                      {error}
+                    </div>
+                  )}
 
                   <div className="form-group">
                     <label htmlFor="nome">Nome *</label>
@@ -303,6 +314,11 @@ export default function VamosJuntosPage() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 3rem;
+        }
+
+        /* Form primeiro no mobile — mais importante que o painel de info */
+        @media (max-width: 899px) {
+          .contato-form-wrap { order: -1; }
         }
 
         @media (min-width: 900px) {
@@ -461,7 +477,7 @@ export default function VamosJuntosPage() {
           gap: 1rem;
         }
 
-        @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+        @media (max-width: 639px) { .form-row { grid-template-columns: 1fr; } }
 
         .form-group--checkbox {
           flex-direction: row;
