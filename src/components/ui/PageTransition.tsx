@@ -1,20 +1,8 @@
 'use client'
 
 import React from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
-
-const pageVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -4 },
-}
-
-const pageTransition = {
-  type: 'tween' as const,
-  ease: 'easeOut' as const,
-  duration: 0.22,
-}
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -24,19 +12,17 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     return <>{children}</>
   }
 
+  // Sem AnimatePresence + mode="wait": o usePathname() do App Router atualiza
+  // antes do conteúdo server chegar, então mode="wait" expõe children vazio.
+  // Fade-in simples por key é suficiente e não cria janela de página em branco.
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={pageTransition}
-        style={{ willChange: 'opacity, transform' }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={pathname}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.18, ease: 'easeOut' }}
+    >
+      {children}
+    </motion.div>
   )
 }
