@@ -2,13 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
-// Simple in-memory rate limit
+// Simple in-memory rate limit — tamanho máximo para evitar crescimento indefinido
+const RATE_MAP_MAX = 5000
 const rateMap = new Map<string, { count: number; resetAt: number }>()
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
   const entry = rateMap.get(ip)
   if (!entry || now > entry.resetAt) {
+    // Limpa entradas expiradas quando o map fica grande
+    if (rateMap.size >= RATE_MAP_MAX) {
+      for (const [k, v] of rateMap) {
+        if (now > v.resetAt) rateMap.delete(k)
+      }
+    }
     rateMap.set(ip, { count: 1, resetAt: now + 3_600_000 })
     return true
   }
@@ -54,6 +61,15 @@ async function geoFromIp(ip: string): Promise<GeoInfo> {
   }
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
 // ── Email notification ───────────────────────────────────────────────────────
 async function sendEmailNotification(data: {
   nome: string
@@ -82,17 +98,17 @@ async function sendEmailNotification(data: {
       body: JSON.stringify({
         from: SMTP_FROM,
         to: [NOTIFY_EMAIL],
-        subject: `[Trakinagem Cine] Nova mensagem de ${data.nome}`,
+        subject: `[Trakinagem Cine] Nova mensagem de ${escapeHtml(data.nome)}`,
         html: `
           <h2 style="color:#D32F2F">Nova mensagem via formulário de contato</h2>
           <table cellpadding="8" style="border-collapse:collapse;width:100%;max-width:600px;font-family:sans-serif">
-            <tr><td><strong>Nome</strong></td><td>${data.nome}</td></tr>
-            <tr><td><strong>Empresa</strong></td><td>${data.empresa || '—'}</td></tr>
-            <tr><td><strong>E-mail</strong></td><td><a href="mailto:${data.email}">${data.email}</a></td></tr>
-            <tr><td><strong>Telefone</strong></td><td>${data.telefone || '—'}</td></tr>
-            <tr><td><strong>Localização</strong></td><td>${[data.cidade, data.estado].filter(Boolean).join(', ') || '—'}</td></tr>
+            <tr><td><strong>Nome</strong></td><td>${escapeHtml(data.nome)}</td></tr>
+            <tr><td><strong>Empresa</strong></td><td>${data.empresa ? escapeHtml(data.empresa) : '—'}</td></tr>
+            <tr><td><strong>E-mail</strong></td><td><a href="mailto:${escapeHtml(data.email)}">${escapeHtml(data.email)}</a></td></tr>
+            <tr><td><strong>Telefone</strong></td><td>${data.telefone ? escapeHtml(data.telefone) : '—'}</td></tr>
+            <tr><td><strong>Localização</strong></td><td>${[data.cidade, data.estado].filter(Boolean).map(escapeHtml).join(', ') || '—'}</td></tr>
             <tr><td style="vertical-align:top"><strong>Mensagem</strong></td>
-              <td style="white-space:pre-wrap">${data.mensagem}</td></tr>
+              <td style="white-space:pre-wrap">${escapeHtml(data.mensagem)}</td></tr>
           </table>
           <hr>
           <p style="color:#888;font-size:12px">Trakinagem Cine — Sistema automático</p>
@@ -123,11 +139,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 })
   }
 
-  const { nome, empresa, email, telefone, mensagem } = body as Record<string, string>
+  const { nome, empresa, email, telefone, mensagem, lgpd } = body as Record<string, string>
 
   if (!nome || !email || !mensagem) {
     return NextResponse.json(
       { error: 'Campos obrigatórios: nome, email, mensagem.' },
+      { status: 422 },
+    )
+  }
+
+  if (!lgpd || lgpd === 'false') {
+    return NextResponse.json(
+      { error: 'É necessário aceitar a Política de Privacidade (LGPD).' },
       { status: 422 },
     )
   }

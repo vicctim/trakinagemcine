@@ -153,6 +153,7 @@ export default function VamosJuntosPage() {
           email: data.get('email'),
           telefone: data.get('telefone'),
           mensagem: data.get('mensagem'),
+          lgpd: data.get('lgpd') === 'on' ? 'true' : 'false',
         }),
       })
 
@@ -290,7 +291,7 @@ export default function VamosJuntosPage() {
                     </label>
                   </div>
 
-                  <button type="submit" className="form-submit">
+                  <button type="submit" className="form-submit" disabled={loading} aria-disabled={loading}>
                     Enviar Mensagem →
                   </button>
                 </form>

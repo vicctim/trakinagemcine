@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -20,7 +20,7 @@ export function Lightbox({ images, initialIndex = 0, isOpen, onClose }: Lightbox
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const closeRef = React.useRef<HTMLButtonElement>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCurrentIndex(initialIndex)
   }, [initialIndex])
 

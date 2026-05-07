@@ -16,6 +16,13 @@ interface HomeClientProps {
   apoiadores: any[]
 }
 
+function truncate(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  const cut = text.slice(0, maxLength)
+  const lastSpace = cut.lastIndexOf(' ')
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + '…'
+}
+
 function formatDate(dateStr: string) {
   try {
     return new Date(dateStr).toLocaleDateString('pt-BR', {
@@ -39,9 +46,11 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
 
   useEffect(() => {
     if (!heroParallaxRef.current) return
+    let killed = false
     let tween: any = null
     import('gsap').then(({ gsap }) => {
       import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+        if (killed) return
         gsap.registerPlugin(ScrollTrigger)
         tween = gsap.to(heroParallaxRef.current, {
           yPercent: 25,
@@ -56,6 +65,7 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
       })
     })
     return () => {
+      killed = true
       tween?.scrollTrigger?.kill()
     }
   }, [])
@@ -265,9 +275,7 @@ export default function HomeClient({ siteConfig, posts, filmes, apoiadores }: Ho
                   <Card
                     title={post.title}
                     description={
-                      typeof post.content === 'string'
-                        ? post.content.slice(0, 120) + '...'
-                        : ''
+                      typeof post.content === 'string' ? truncate(post.content, 120) : ''
                     }
                     imageUrl={getMediaUrl(post.coverImage)}
                     imageAlt={post.coverImage?.alt || post.title}
