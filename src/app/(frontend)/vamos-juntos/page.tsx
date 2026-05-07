@@ -130,13 +130,6 @@ export default function VamosJuntosPage() {
   const [error, setError] = useState<string | null>(null)
   const [phone, setPhone] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
-  const errorRef = useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    if (error && errorRef.current) {
-      errorRef.current.focus()
-    }
-  }, [error])
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPhone(formatPhone(e.target.value))
@@ -248,7 +241,7 @@ export default function VamosJuntosPage() {
               ) : (
                 <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate>
                   {error && (
-                    <div className="form-error" role="alert" ref={errorRef} tabIndex={-1}>
+                    <div className="form-error" role="alert">
                       {error}
                     </div>
                   )}
