@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/payload'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { YouTubeEmbed } from '@/components/ui/YouTubeEmbed'
+import { FooterLogosBar } from '@/components/layout/Footer'
 import { Calendar } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -61,6 +62,7 @@ export default async function EdicaoSlugPage({ params }: Props) {
   const fotos: any[] = edicao.fotos || []
   const videos: any[] = edicao.videoLinks || []
   const parceiros: any[] = edicao.parceirosInstitucionais || []
+  const logosRodape = (edicao as any).logosRodape || null
 
   const eventSchema = buildEventSchema({
     title: edicao.titulo,
@@ -192,6 +194,18 @@ export default async function EdicaoSlugPage({ params }: Props) {
                 <li key={i} className="parceiro-item">{p.nome}</li>
               ))}
             </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Logos desta edição */}
+      {logosRodape && (
+        <section className="section section-alt">
+          <div className="container">
+            <FooterLogosBar
+              logosRodape={logosRodape}
+              label={`Apoio e Realização — ${edicao.titulo}`}
+            />
           </div>
         </section>
       )}
