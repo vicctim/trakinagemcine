@@ -46,7 +46,10 @@
       "Bash(rclone listremotes *)",
       "Bash(rclone ls *)",
       "Bash(curl -sI https://trakinagemcine.victorsamuel.com.br)",
-      "Bash(curl -sI https://trakinagem.victorsamuel.com.br)"
+      "Bash(curl -sI https://trakinagem.victorsamuel.com.br)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(git fetch *)"
     ]
   }
 }
