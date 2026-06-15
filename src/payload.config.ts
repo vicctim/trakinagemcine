@@ -15,12 +15,14 @@ import { Filmes } from './collections/Filmes'
 import { Premios } from './collections/Premios'
 import { Apoiadores } from './collections/Apoiadores'
 import { FormSubmissions } from './collections/FormSubmissions'
+import { Pages } from './collections/Pages'
 
 // Globals
 import { SiteConfig } from './globals/SiteConfig'
 import { SmtpConfig } from './globals/SmtpConfig'
 import { AnalyticsConfig } from './globals/AnalyticsConfig'
 import { BackupConfig } from './globals/BackupConfig'
+import { Navigation } from './globals/Navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -43,7 +45,7 @@ export default buildConfig({
     // ─── Sidebar Links de Apoio ───────────────────────────────────────────
     livePreview: {
       url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      collections: ['posts', 'filmes', 'edicoes'],
+      collections: ['posts', 'filmes', 'edicoes', 'pages'],
     },
   },
 
@@ -59,6 +61,9 @@ export default buildConfig({
     // Grupo: CRM
     FormSubmissions,
 
+    // Grupo: Construtor de Páginas
+    Pages,
+
     // Grupo: Sistema
     Users,
     Media,
@@ -70,6 +75,7 @@ export default buildConfig({
     SmtpConfig,
     AnalyticsConfig,
     BackupConfig,
+    Navigation,
   ],
 
   // ─── Internationalization (pt-BR) ───────────────────────────────────────

@@ -9,6 +9,8 @@ import { PageTransition } from '@/components/ui/PageTransition'
 import { AnalyticsScripts } from '@/components/ui/AnalyticsScripts'
 import { ChunkErrorRecovery } from '@/components/ui/ChunkErrorRecovery'
 import { getPayloadClient } from '@/lib/payload'
+import { getNavigation } from '@/lib/navigation'
+import { defaultNavLeft, defaultNavRight } from '@/components/layout/Header'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -90,15 +92,20 @@ const orgSchema = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let analyticsConfig = null
   let theme = 'default'
+  let navLeft = defaultNavLeft
+  let navRight = defaultNavRight
 
   try {
     const payload = await getPayloadClient()
-    const [analytics, siteConfig] = await Promise.all([
+    const [analytics, siteConfig, navigation] = await Promise.all([
       payload.findGlobal({ slug: 'analytics-config' as any }).catch(() => null),
       payload.findGlobal({ slug: 'site-config' }).catch(() => null),
+      getNavigation(),
     ])
     analyticsConfig = analytics
     theme = (siteConfig as any)?.theme || 'default'
+    navLeft = navigation.navLeft
+    navRight = navigation.navRight
   } catch {
     // DB unavailable during build — render with defaults
   }
@@ -113,7 +120,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <ChunkErrorRecovery />
-        <Header />
+        <Header navLeft={navLeft} navRight={navRight} />
         <PageTransition>
           <main>{children}</main>
         </PageTransition>
