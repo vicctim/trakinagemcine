@@ -1,5 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { getPayloadClient } from '@/lib/payload'
+import { getMediaUrl } from '@/lib/seo'
 
 const footerLinks = [
   { href: '/bora-filmar', label: 'Bora Filmar!' },
@@ -39,11 +42,209 @@ const socialLinks = [
   },
 ]
 
-export function Footer() {
+// ─── Reusable logos bar component ────────────────────────────────────────────
+
+interface LogosRodapeData {
+  tipoExibicao?: 'imagem_unica' | 'individual'
+  imagemUnica?: any
+  logosIndividuais?: Array<{
+    logo: any
+    nome: string
+    link?: string
+  }>
+}
+
+export function FooterLogosBar({
+  logosRodape,
+  label,
+}: {
+  logosRodape: LogosRodapeData
+  label?: string
+}) {
+  if (!logosRodape) return null
+
+  const { tipoExibicao, imagemUnica, logosIndividuais } = logosRodape
+
+  const hasContent =
+    (tipoExibicao === 'imagem_unica' && imagemUnica) ||
+    (tipoExibicao === 'individual' && logosIndividuais && logosIndividuais.length > 0)
+
+  if (!hasContent) return null
+
+  return (
+    <div className="footer-logos">
+      {label && <p className="footer-logos__label">{label}</p>}
+
+      {tipoExibicao === 'imagem_unica' && imagemUnica && (
+        <div className="footer-logos__single">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={getMediaUrl(imagemUnica)}
+            alt="Apoio e Realização"
+            className="footer-logos__single-img"
+          />
+        </div>
+      )}
+
+      {tipoExibicao === 'individual' && logosIndividuais && logosIndividuais.length > 0 && (
+        <div className="footer-logos__grid">
+          {logosIndividuais.map((item, i) => {
+            const logoUrl = getMediaUrl(item.logo)
+            if (!logoUrl) return null
+
+            const imgEl = (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoUrl}
+                alt={item.nome}
+                title={item.nome}
+                className="footer-logos__item-img"
+              />
+            )
+
+            return (
+              <div key={i} className="footer-logos__item">
+                {item.link ? (
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-logos__item-link"
+                    title={item.nome}
+                  >
+                    {imgEl}
+                  </a>
+                ) : (
+                  imgEl
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <style>{`
+        .footer-logos {
+          padding: 2.5rem 0 2rem;
+          text-align: center;
+        }
+
+        .footer-logos__label {
+          font-size: 0.65rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          color: var(--color-dark-text-muted, rgba(255,255,255,0.45));
+          margin-bottom: 1.25rem;
+        }
+
+        .footer-logos__single {
+          display: flex;
+          justify-content: center;
+        }
+
+        .footer-logos__single-img {
+          max-width: 100%;
+          max-height: 120px;
+          height: auto;
+          object-fit: contain;
+          opacity: 0.85;
+          transition: opacity 0.3s ease;
+          filter: brightness(0) invert(1);
+        }
+
+        .footer-logos__single-img:hover {
+          opacity: 1;
+        }
+
+        .footer-logos__grid {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          gap: 1.5rem 2rem;
+        }
+
+        .footer-logos__item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .footer-logos__item-img {
+          max-height: 48px;
+          max-width: 120px;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          opacity: 0.6;
+          filter: brightness(0) invert(1);
+          transition: all 0.3s ease;
+        }
+
+        .footer-logos__item:hover .footer-logos__item-img,
+        .footer-logos__item-link:hover .footer-logos__item-img {
+          opacity: 1;
+          filter: none;
+        }
+
+        @media (max-width: 640px) {
+          .footer-logos__grid {
+            gap: 1rem 1.25rem;
+          }
+          .footer-logos__item-img {
+            max-height: 36px;
+            max-width: 90px;
+          }
+          .footer-logos__single-img {
+            max-height: 80px;
+          }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// ─── Fetch latest edition logos ─────────────────────────────────────────────
+
+async function fetchLatestEditionLogos(): Promise<LogosRodapeData | null> {
+  try {
+    const payload = await getPayloadClient()
+    const { docs } = await payload.find({
+      collection: 'edicoes',
+      sort: '-ano',
+      limit: 1,
+      depth: 2,
+      where: {
+        'logosRodape.tipoExibicao': { exists: true },
+      },
+    })
+
+    const edicao = docs[0]
+    if (!edicao?.logosRodape) return null
+
+    return edicao.logosRodape as LogosRodapeData
+  } catch {
+    return null
+  }
+}
+
+// ─── Footer component ───────────────────────────────────────────────────────
+
+export async function Footer() {
   const year = new Date().getFullYear()
+  const logosRodape = await fetchLatestEditionLogos()
 
   return (
     <footer className="footer">
+      {/* Logos bar */}
+      {logosRodape && (
+        <div className="container">
+          <FooterLogosBar logosRodape={logosRodape} label="Apoio e Realização" />
+          <div className="footer-logos-divider" />
+        </div>
+      )}
+
       <div className="footer__inner container">
         <div className="footer__brand">
           <Link href="/" className="footer__logo">
@@ -102,11 +303,18 @@ export function Footer() {
           color: var(--color-dark-text);
         }
 
+        .footer-logos-divider {
+          height: 1px;
+          background: var(--color-dark-border);
+          margin: 0;
+        }
+
         .footer__inner {
           display: grid;
           grid-template-columns: 1fr;
           gap: 2.5rem;
           padding-bottom: 3rem;
+          padding-top: 2rem;
         }
 
         @media (min-width: 768px) {
