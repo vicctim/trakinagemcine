@@ -7,6 +7,11 @@ import { VideoBlock } from './VideoBlock'
 import { CountersBlock } from './CountersBlock'
 import { LogosBlock } from './LogosBlock'
 import { CallToActionBlock } from './CallToActionBlock'
+import { ImageBlock } from './ImageBlock'
+import { ButtonsBlock } from './ButtonsBlock'
+import { LinksBlock } from './LinksBlock'
+import { BannerBlock } from './BannerBlock'
+import { ColumnsBlock } from './ColumnsBlock'
 
 export const pageBlocks: Block[] = [
   HeroSectionBlock,
@@ -17,6 +22,11 @@ export const pageBlocks: Block[] = [
   CountersBlock,
   LogosBlock,
   CallToActionBlock,
+  ImageBlock,
+  ButtonsBlock,
+  LinksBlock,
+  BannerBlock,
+  ColumnsBlock,
 ]
 
 export {
@@ -28,4 +38,9 @@ export {
   CountersBlock,
   LogosBlock,
   CallToActionBlock,
+  ImageBlock,
+  ButtonsBlock,
+  LinksBlock,
+  BannerBlock,
+  ColumnsBlock,
 }
