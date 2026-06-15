@@ -4,8 +4,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-// ── Menu structure ────────────────────────────────────────────────────────────
-const navLeft = [
+// ── Dropdown item type ────────────────────────────────────────────────────────
+export type NavItem =
+  | { href: string; label: string; children?: never }
+  | { label: string; href?: never; children: { href: string; label: string }[] }
+
+// ── Default menu structure (used when CMS navigation is unavailable) ──────────
+export const defaultNavLeft: NavItem[] = [
   { href: '/quentinhas', label: 'Quentinhas' },
   {
     label: 'Festival',
@@ -25,16 +30,11 @@ const navLeft = [
   },
 ]
 
-const navRight = [
+export const defaultNavRight: NavItem[] = [
   { href: '/apoiadores', label: 'Apoiadores' },
   { href: '/nossas-inspiracoes', label: 'Inspirações' },
   { href: '/vamos-juntos', label: 'Vamos Juntos?' },
 ]
-
-// ── Dropdown item type ────────────────────────────────────────────────────────
-type NavItem =
-  | { href: string; label: string; children?: never }
-  | { label: string; href?: never; children: { href: string; label: string }[] }
 
 // ── Dropdown ──────────────────────────────────────────────────────────────────
 function Dropdown({ item, pathname }: { item: NavItem; pathname: string }) {
@@ -162,7 +162,13 @@ function MobileNavItem({
 }
 
 // ── Main Header ───────────────────────────────────────────────────────────────
-export function Header() {
+export function Header({
+  navLeft = defaultNavLeft,
+  navRight = defaultNavRight,
+}: {
+  navLeft?: NavItem[]
+  navRight?: NavItem[]
+}) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
